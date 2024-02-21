@@ -34,3 +34,29 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## Branching
+
+When picking up a new story, create a new branch off of master, the name should be a description of what the story entails
+A pull request will need to be created and approved by other members before merging the feature branch with master
+We cannot edit main branch directly and make commits
+
+## File Structure
+
+/pages: Contains your application's page components. Next.js uses the files in this directory for its pages-based routing.
+
+/components: For reusable UI components. Organize further into subdirectories as needed (e.g., /common, /layout).
+
+/styles: Contains your CSS or Sass files. You might have global styles here and individual component styles close to their respective components.
+
+/public: For static files like images, fonts, etc., that Next.js can serve directly.
+
+/lib or /utils: For utility functions and library code that's not specific to any single component.
+
+/hooks: Custom React hooks to encapsulate and reuse stateful logic.
+
+/services: For code that interfaces with external services, like fetching data from an API.
+
+/models (if applicable): Definitions for the shapes of data you're using, possibly mirroring your database models.
+
+/context (if using React Context): For global state management files.
