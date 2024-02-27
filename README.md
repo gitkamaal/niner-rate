@@ -43,7 +43,12 @@ We cannot edit main branch directly and make commits
 
 ## File Structure
 
-/pages: Contains your application's page components. Next.js uses the files in this directory for its pages-based routing.
+Inside the src/app/ directory is where we create new routes.
+Each route needs a page.tsx and layout.tsx (The one not in a folder is the default / route)
+
+layout.tsx: This is a component that wraps around the main content of your pages. It's typically used to apply a consistent set of components or styling across multiple pages. For example, if you have a navigation bar or a footer that appears on every page, you would include it in your layout component.
+
+page.tsx: This represents an individual page in your application. Each page.tsx file is associated with a specific route in your app. When a user navigates to that route, the associated page.tsx file is rendered inside the layout.tsx component
 
 /components: For reusable UI components. Organize further into subdirectories as needed (e.g., /common, /layout).
 
