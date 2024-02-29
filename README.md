@@ -39,7 +39,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 
 When picking up a new story, create a new branch off of master, the name should be a description of what the story entails
 A pull request will need to be created and approved by other members before merging the feature branch with master
-We cannot edit main branch directly and make commits.
+We cannot edit main branch directly and make commits
 
 ## File Structure
 
