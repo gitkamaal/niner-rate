@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import SearchInput from './searchInput';
 
 const Navbar: React.FC = ({}) => {
   return (
@@ -24,7 +23,7 @@ const Navbar: React.FC = ({}) => {
           Instructors
         </Link>
         <span className="text-white">|</span>
-        <Link className="text-white px-4 hover:underline" href="#">
+        <Link className="text-white px-4 hover:underline" href="/login">
           Login
         </Link>
       </div>
