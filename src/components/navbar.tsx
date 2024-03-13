@@ -4,7 +4,7 @@ const Navbar: React.FC = ({}) => {
       <div className="text-white text-2xl">NinerRate</div>
       <ul className="flex items-center space-x-4">
         <li>
-          <a href="#" className="text-white">
+          <a href="/login" className="text-white">
             Login
           </a>
         </li>
