@@ -6,7 +6,7 @@ const Navbar: React.FC = ({}) => {
       key="1"
       className="flex items-center justify-between w-full h-20 px-8 bg-[#005035]"
     >
-      <Link className="text-2xl font-bold text-white" href="#">
+      <Link className="text-2xl font-bold text-white" href="/">
         NinerRate
       </Link>
 
