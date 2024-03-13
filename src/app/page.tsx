@@ -6,7 +6,7 @@ const LandingPage: React.FC = ({}) => {
   return (
     <>
       <Navbar />
-      <Card />
+      <Card children={undefined} />
     </>
   );
 };
