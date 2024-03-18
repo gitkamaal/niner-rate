@@ -19,7 +19,7 @@ const Navbar: React.FC = ({}) => {
           Courses
         </Link>
         <span className="text-white">|</span>
-        <Link className="text-white px-4 hover:underline" href="#">
+        <Link className="text-white px-4 hover:underline" href="/instructors">
           Instructors
         </Link>
         <span className="text-white">|</span>
