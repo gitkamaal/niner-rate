@@ -1,6 +1,10 @@
+'use client';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import SearchInput from './searchInput';
 
 const Navbar: React.FC = ({}) => {
+  const pathname = usePathname();
   return (
     <header
       key="1"
@@ -10,9 +14,14 @@ const Navbar: React.FC = ({}) => {
         NinerRate
       </Link>
 
-      {/* <div className="flex-grow mx-8">
-        <SearchInput className="w-full max-w-lg mx-auto" />
-      </div> */}
+      <div className="flex-grow mx-8">
+        {pathname !== '/' && (
+          <SearchInput
+            className="w-full max-w-lg mx-auto"
+            placeholder="Search..."
+          />
+        )}
+      </div>
 
       <div className="flex items-center">
         <Link className="text-white pr-4 hover:underline" href="#">
