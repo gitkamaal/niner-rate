@@ -1,115 +1,42 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/navbar';
 import Pagination from '@/components/pagination';
 
-const ITEMS_PER_PAGE = 9; // Set the number of items you want per page
+interface Professor {
+  name: string;
+  title: string;
+  department: string;
+  office: string;
+  email: string;
+  phone?: string;
+}
 
-const InstructorsPage = () => {
-  const professors = [
-    {
-      name: 'Test Professor',
-      title: 'Test Title',
-      department: 'Test Department',
-      office: 'Test Office',
-      email: 'test1@test.edu',
-      phone: '123-456-7890',
-    },
-    {
-      name: 'Another Professor',
-      title: 'Another Title',
-      department: 'Another Department',
-      office: 'Another Office',
-      email: 'test2@test.edu',
-      phone: '987-654-3210',
-    },
-    {
-      name: 'Another Professor',
-      title: 'Another Title',
-      department: 'Another Department',
-      office: 'Another Office',
-      email: 'test2@test.edu',
-      phone: '987-654-3210',
-    },
-    {
-      name: 'Another Professor',
-      title: 'Another Title',
-      department: 'Another Department',
-      office: 'Another Office',
-      email: 'test2@test.edu',
-      phone: '987-654-3210',
-    },
-    {
-      name: 'Another Professor',
-      title: 'Another Title',
-      department: 'Another Department',
-      office: 'Another Office',
-      email: 'test2@test.edu',
-      phone: '987-654-3210',
-    },
-    {
-      name: 'Test Professor',
-      title: 'Test Title',
-      department: 'Test Department',
-      office: 'Test Office',
-      email: 'test1@test.edu',
-      phone: '123-456-7890',
-    },
-    {
-      name: 'Another Professor',
-      title: 'Another Title',
-      department: 'Another Department',
-      office: 'Another Office',
-      email: 'test2@test.edu',
-      phone: '987-654-3210',
-    },
-    {
-      name: 'Another Professor',
-      title: 'Another Title',
-      department: 'Another Department',
-      office: 'Another Office',
-      email: 'test2@test.edu',
-      phone: '987-654-3210',
-    },
-    {
-      name: 'Test Professor',
-      title: 'Test Title',
-      department: 'Test Department',
-      office: 'Test Office',
-      email: 'test1@test.edu',
-      phone: '123-456-7890',
-    },
-    {
-      name: 'Another Professor',
-      title: 'Another Title',
-      department: 'Another Department',
-      office: 'Another Office',
-      email: 'test2@test.edu',
-      phone: '987-654-3210',
-    },
-    {
-      name: 'Another Professor',
-      title: 'Another Title',
-      department: 'Another Department',
-      office: 'Another Office',
-      email: 'test2@test.edu',
-      phone: '987-654-3210',
-    },
-    {
-      name: 'Test Professor',
-      title: 'Test Title',
-      department: 'Test Department',
-      office: 'Test Office',
-      email: 'test1@test.edu',
-      phone: '123-456-7890',
-    },
-  ];
+const ITEMS_PER_PAGE = 9;
 
+export default function InstructorsPage() {
+  const [professors, setProfessors] = useState<Professor[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(professors.length / ITEMS_PER_PAGE);
 
-  // Calculate the slice of professors to display based on the current page
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/instructors');
+        if (!response.ok) {
+          throw new Error('Failed to fetch');
+        }
+        const data: Professor[] = await response.json();
+        setProfessors(data);
+      } catch (error) {
+        console.error('Failed to fetch professors:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const totalPages = Math.ceil(professors.length / ITEMS_PER_PAGE);
   const displayedProfessors = professors.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
@@ -118,7 +45,6 @@ const InstructorsPage = () => {
   return (
     <>
       <Navbar />
-
       <main className="py-8 px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayedProfessors.map((professor, index) => (
@@ -152,11 +78,9 @@ const InstructorsPage = () => {
         <Pagination
           totalPages={totalPages}
           currentPage={currentPage}
-          onPageChange={(page) => setCurrentPage(page)}
+          onPageChange={setCurrentPage}
         />
       </main>
     </>
   );
-};
-
-export default InstructorsPage;
+}
