@@ -41,11 +41,13 @@ const SearchInput: React.FC<SearchInputProps> = ({
         type="search"
         value={searchTerm}
         onChange={onChange}
-        className="w-full px-4 py-2"
+        className="w-full px-4 py-2 rounded-lg placeholder-gray-500" // Adjusted classes here
         placeholder={placeholder}
       />
       {suggestions.length > 0 && (
-        <ul className="absolute z-10 w-full bg-white border border-gray-300">
+        <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg">
+          {' '}
+          {/* Added rounded-lg, mt-1 for margin top, and shadow-lg for a subtle shadow */}
           {suggestions.map((item, index) => (
             <li key={index} className="p-2 hover:bg-gray-100 cursor-pointer">
               {item}
