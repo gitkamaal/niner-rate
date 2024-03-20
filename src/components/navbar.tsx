@@ -27,7 +27,7 @@ const Navbar: React.FC = ({}) => {
       </div>
 
       <div className="flex items-center">
-        <Link className="text-white pr-4 hover:underline" href="#">
+        <Link className="text-white pr-4 hover:underline" href="/courses">
           Courses
         </Link>
         <span className="text-white">|</span>
