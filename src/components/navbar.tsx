@@ -2,8 +2,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import SearchInput from './searchInput';
+import { useSession, signOut } from 'next-auth/react';
 
 const Navbar: React.FC = ({}) => {
+  const { data: session } = useSession();
+
   const pathname = usePathname();
   return (
     <header
@@ -36,9 +39,17 @@ const Navbar: React.FC = ({}) => {
           Review
         </Link>
         <span className="text-white">|</span>
-        <Link className="text-white px-4 hover:underline" href="/login">
+        
+
+        {session ? (
+          <Link className="text-white px-4 hover:underline" href="/api/auth/signout">
+          Logout
+        </Link>
+        ) : (
+          <Link className="text-white px-4 hover:underline" href="/login">
           Login
         </Link>
+        )}
       </div>
     </header>
   );
