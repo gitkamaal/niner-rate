@@ -37,7 +37,7 @@ const Page: React.FC = () => {
       <div className="flex justify-center items-center h-screen">
         <form
           onSubmit={handleSubmit}
-          className="border shadow-md rounded-lg px-5 py-5"
+          className="border shadow-md rounded-lg px-5 py-5 bg-white"
         >
           <div className="w-full max-w-md">
             <h1 className="text-2xl font-bold mb-4 text-center">

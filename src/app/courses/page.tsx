@@ -26,6 +26,7 @@ const Page: React.FC = () => {
           throw new Error('Failed to fetch');
         }
         const data: Course[] = await response.json();
+        console.log(data);
         setCourses(data);
       } catch (error) {
         console.error('Failed to fetch courses:', error);
@@ -44,7 +45,7 @@ const Page: React.FC = () => {
   return (
     <>
       <Navbar />
-      <main className="py-8 px-4">
+      <main className="mt-10 py-8 px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayedCourses.map((course) => (
             <Link key={course._id} href={`/courses/${course._id}`}>
