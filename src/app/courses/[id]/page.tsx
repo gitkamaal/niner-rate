@@ -62,7 +62,7 @@ export default function CoursePage() {
                     <NavigationMenuItem>
                       <NavigationMenuLink
                         onClick={() => setActiveTab('description')}
-                        className={`group inline-flex h-9 w-max items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium transition-colors ${
+                        className={`group inline-flex h-9 w-max items-center justify-center rounded-md  px-4 py-2 text-sm font-medium transition-colors ${
                           activeTab === 'description'
                             ? 'bg-gray-500 text-white'
                             : 'hover:bg-gray-100 hover:text-gray-900'
@@ -75,7 +75,7 @@ export default function CoursePage() {
                     <NavigationMenuItem>
                       <NavigationMenuLink
                         onClick={() => setActiveTab('reviews')}
-                        className={`group inline-flex h-9 w-max items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium transition-colors ${
+                        className={`group inline-flex h-9 w-max items-center justify-center rounded-md  px-4 py-2 text-sm font-medium transition-colors ${
                           activeTab === 'reviews'
                             ? 'bg-gray-500 text-white'
                             : 'hover:bg-gray-100 hover:text-gray-900'
