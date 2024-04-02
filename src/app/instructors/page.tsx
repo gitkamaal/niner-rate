@@ -47,7 +47,7 @@ export default function InstructorsPage() {
   return (
     <>
       <Navbar />
-      <main className="py-8 px-4">
+      <main className="mt-10 py-8 px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayedProfessors.map((professor, index) => (
             <div
