@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/navbar';
 import Pagination from '@/components/pagination';
+import { HiExternalLink } from 'react-icons/hi';
 
 interface Professor {
   name: string;
@@ -11,6 +12,7 @@ interface Professor {
   office: string;
   email: string;
   phone?: string;
+  rateMyProfessorsId?: string;
 }
 
 const ITEMS_PER_PAGE = 9;
@@ -45,15 +47,25 @@ export default function InstructorsPage() {
   return (
     <>
       <Navbar />
-      <main className="py-8 px-4">
+      <main className="mt-10 py-8 px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayedProfessors.map((professor, index) => (
             <div
               key={index}
               className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg"
             >
-              <div className="bg-[#A49665] p-4">
+              <div className="bg-[#A49665] p-4 flex justify-between items-center">
                 <h5 className="text-white">{professor.name}</h5>
+                {professor.rateMyProfessorsId && (
+                  <a
+                    href={`https://www.ratemyprofessors.com/professor/${professor.rateMyProfessorsId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white hover:underline"
+                  >
+                    <HiExternalLink size={20} />
+                  </a>
+                )}
               </div>
               <div className="p-4">
                 <p className="text-sm text-gray-700 dark:text-gray-300">

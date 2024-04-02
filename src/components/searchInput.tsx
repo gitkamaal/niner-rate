@@ -1,15 +1,12 @@
 'use client';
-import React, { useState } from 'react';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
 
-// Mock data
-const mockData = [
-  'Course 101',
-  'Course 102',
-  'Course 201',
-  'Course 202',
-  'Data Science',
-  'Design Patterns',
-];
+interface Course {
+  _id: string;
+  code: string;
+  title: string;
+}
 
 type SearchInputProps = {
   className?: string;
@@ -21,7 +18,16 @@ const SearchInput: React.FC<SearchInputProps> = ({
   placeholder,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestions, setSuggestions] = useState<Course[]>([]);
+  const [data, setData] = useState<Course[]>([]);
+
+  useEffect(() => {
+    fetch('/api/courses')
+      .then((response) => response.json())
+      .then((data) => {
+        setData(data);
+      });
+  }, []);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -29,7 +35,10 @@ const SearchInput: React.FC<SearchInputProps> = ({
 
     if (value.length > 0) {
       const regex = new RegExp(`^${value}`, 'i');
-      setSuggestions(mockData.sort().filter((v) => regex.test(v)));
+      const filteredSuggestions = data.filter(
+        (v) => regex.test(v.code) || regex.test(v.title)
+      );
+      setSuggestions(filteredSuggestions.slice(0, 6));
     } else {
       setSuggestions([]);
     }
@@ -41,17 +50,22 @@ const SearchInput: React.FC<SearchInputProps> = ({
         type="search"
         value={searchTerm}
         onChange={onChange}
-        className="w-full px-4 py-2 rounded-lg placeholder-gray-500" // Adjusted classes here
+        className="w-full px-4 py-2 rounded-lg placeholder-gray-500"
         placeholder={placeholder}
       />
       {suggestions.length > 0 && (
-        <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg">
+        <ul
+          className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg "
+          style={{ zIndex: 1000 }}
+        >
           {' '}
-          {/* Added rounded-lg, mt-1 for margin top, and shadow-lg for a subtle shadow */}
+          {}
           {suggestions.map((item, index) => (
-            <li key={index} className="p-2 hover:bg-gray-100 cursor-pointer">
-              {item}
-            </li>
+            <Link key={index} href={`/courses/${item._id}`}>
+              <li className="p-2 hover:bg-gray-100 cursor-pointer">
+                {item.code} - {item.title}
+              </li>
+            </Link>
           ))}
         </ul>
       )}
