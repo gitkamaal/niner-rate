@@ -53,7 +53,7 @@ export default function CoursePage() {
           <div className="grid grid-cols-1 gap-6">
             <div className="p-8 bg-white rounded-lg shadow-md">
               <h2 className="text-2xl font-bold text-[#005035] mb-4">
-                {course.title}
+                {course.code + ": " + course.title}
               </h2>
 
               <div className="mt-6">

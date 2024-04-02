@@ -26,7 +26,6 @@ const Page: React.FC = () => {
           throw new Error('Failed to fetch');
         }
         const data: Course[] = await response.json();
-        console.log(data);
         setCourses(data);
       } catch (error) {
         console.error('Failed to fetch courses:', error);
