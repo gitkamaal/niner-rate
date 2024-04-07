@@ -4,14 +4,23 @@ import { usePathname } from 'next/navigation';
 import SearchInput from './searchInput';
 import { useSession, signOut } from 'next-auth/react';
 import { useState } from 'react';
+import { useUser } from '../app/contexts/UserContext';
+
+interface UserProfile {
+  email: string;
+  firstName: string;
+  lastName: string;
+  image: string;
+  userId: string;
+}
 
 const Navbar: React.FC = ({}) => {
   const { data: session } = useSession();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-
   const toggleDropdown = () => setDropdownOpen(!isDropdownOpen);
-
   const pathname = usePathname();
+  const { userProfile } = useUser() as unknown as { userProfile: UserProfile } ?? {};
+
   return (
     <header
       key="1"
@@ -51,11 +60,11 @@ const Navbar: React.FC = ({}) => {
               onClick={toggleDropdown}
               className="text-white px-4 hover:underline"
             >
-              {session.user?.name}
+              {userProfile?.firstName}
             </button>
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-20">
-                <Link href="/user/profile" className="block px-4 py-2 text-sm capitalize text-gray-700 hover:bg-blue-500 hover:text-white">
+                <Link href="/users/profile" className="block px-4 py-2 text-sm capitalize text-gray-700 hover:bg-blue-500 hover:text-white">
                   
                     Profile
                   

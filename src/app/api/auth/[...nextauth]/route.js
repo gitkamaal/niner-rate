@@ -38,11 +38,36 @@ export const authOptions = {
                 firstName: profile.given_name, 
                 lastName: profile.family_name, 
                 image: user.image,
-                googleId: profile.sub, 
+                userId: profile.sub,
+                savedCourses: []
               });
             }
       
             return true;
+        },
+        async jwt({ token, user, profile }) {
+            // If the user object is available, add the user ID to the token
+            if (user) {
+                console.log("JWT Callback - User: ", user);
+                token.userId = user.id;
+                token.firstName = profile?.given_name;
+
+            }
+            
+            return token;
+        },
+        async session({ session, token }) {
+            console.log("Session Callback - Session: ", session, "Token: ", token);
+            if (token.sub) {
+                session.user.id = token.userId;
+            }
+            if (token.firstName) {
+                session.user.firstName = token.firstName; 
+                console.log("Session Callback - updated Session: ", session);
+            }
+
+
+            return session;
         },
     },
 }
