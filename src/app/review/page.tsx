@@ -9,21 +9,41 @@ const Page: React.FC = () => {
   const [rating, setRating] = useState<number | null>(null);
   const [review, setReview] = useState('');
 
-  // Function to handle form submission
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    // Here you can handle form submission, e.g., sending data to a server
-    console.log('Form submitted with:', {
-      courseName,
-      studentName,
-      rating,
-      review,
-    });
-    // You can also clear the form fields after submission if needed
-    setCourseName('');
-    setStudentName('');
-    setRating(null);
-    setReview('');
+   // Function to handle form submission
+   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      // Send the form data to the server
+      const response = await fetch('/api/review', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          courseName,
+          studentName,
+          rating,
+          review,
+        }),
+      });
+
+      // Check if the response is successful
+      if (response.ok) {
+        // Reset form fields on successful submission
+        setCourseName('');
+        setStudentName('');
+        setRating(null);
+        setReview('');
+        console.log('submitted');
+        // Handle success, e.g., show a success message
+      } else {
+        // Handle error, e.g., show an error message
+        console.error('Failed to submit review:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Failed to submit review:', error);
+    }
   };
 
   // Function to handle clicking on a star
