@@ -1136,6 +1136,14 @@ async function populateCourses() {
       },
 
       { 
+        code: 'ITCS 3166', 
+        title: 'Introduction to Computer Networks',
+        courseDescription: 'Internet architecture and protocols. Distributed vs. centralized processing. Data communications; speed; capacity; media, protocols. Network architectures. Evaluation of alternatives. Case studies.',
+        unccCatalogID: '', 
+        unccCourseID: ''  
+      },
+
+      { 
         code: 'ITCS 3182', 
         title: 'Computer Organization and Architecture',
         courseDescription: 'Machine level representation of data; von Neumann architecture; instruction sets and types; addressing types; assembly and machine language programming; control unit and microprogramming; alternate architectures.',
@@ -1289,7 +1297,7 @@ async function populateCourses() {
 
       { 
         code: 'ITCS 4141', 
-        title: 'PComputer Organization and Architecture',
+        title: 'Computer Organization and Architecture',
         courseDescription: 'Fundamentals of computer design; instruction set design, basic processor implementation techniques; pipelining; memory hierarchy; Input/Output. Cost/performance and hardware/software trade-offs.',
         unccCatalogID: '36', 
         unccCourseID: '123070'  
@@ -3100,6 +3108,6 @@ async function populateCourses() {
   }
 }
 
-// Call the function to populate courses
-// type 'node populateCourses.js' in terminal
+// Call the function to populate courses in mongoDB Atlas
+// type 'node db_script/populateCourses.js' in terminal
 populateCourses();

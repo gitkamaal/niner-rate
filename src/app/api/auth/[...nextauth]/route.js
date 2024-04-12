@@ -2,7 +2,7 @@ import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 import clientPromise from '../../../../../mongodb';
 
-export const authOptions = {
+const authOptions = {
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID,
@@ -24,6 +24,7 @@ export const authOptions = {
             const db = client.db('niner-rate');
       
             const isAllowedToSignIn = user.email.endsWith('@uncc.edu') || user.email.endsWith('@charlotte.edu');
+
             if (!isAllowedToSignIn) {
               return false; // reject sign in
             }
@@ -58,6 +59,7 @@ export const authOptions = {
         },
         async session({ session, token }) {
             console.log("Session Callback - Session: ", session, "Token: ", token);
+
             if (token.sub) {
                 session.user.id = token.userId;
             }
@@ -65,8 +67,7 @@ export const authOptions = {
                 session.user.firstName = token.firstName; 
                 console.log("Session Callback - updated Session: ", session);
             }
-
-
+            
             return session;
         },
     },
