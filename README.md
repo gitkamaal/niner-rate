@@ -1,67 +1,79 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Niner Rate
 
-## Getting Started
+### Table of Contents:
 
-First, run the development server:
+- [Niner Rate](#niner-rate)
+- [Project Overview](#project-overview)
+- [Developed Using](#developed-using)
+- [Deployment](#deployment)
+- [Contributors](#contributors)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Screenshots Overview:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Login                                                                  | Home Page                                                                          | Courses                                                                      |
+| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [![Login](assets/readme-imgs/login.JPG)](assets/readme-imgs/login.JPG) | [![Home Page](assets/readme-imgs/home-page.JPG)](assets/readme-imgs/home-page.JPG) | [![Courses](assets/readme-imgs/courses.JPG)](assets/readme-imgs/courses.JPG) |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Course Datails                                                                                 | Instructors                                                                              | Review                                                                    |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| [![Course Detail](assets/readme-imgs/course-detail.JPG)](assets/readme-imgs/course-detail.JPG) | [![Instructors](assets/readme-imgs/instructors.JPG)](assets/readme-imgs/instructors.JPG) | [![Review](assets/readme-imgs/review.JPG)](assets/readme-imgs/review.JPG) |
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Project Overview:
 
-## Learn More
+For our capstone project in ITSC 4155 Software Development Projects at UNC Charlotte, Oliver Briot, Kamaal Hassan, Willy Xiong, Txuj Yang, and Jai Vang collaborated to create Niner Rate.
 
-To learn more about Next.js, take a look at the following resources:
+Niner Rate is a fullstack web application designed as a sophisticated course and professor rating system specifically for UNC Charlotte students. The platform's primary goal is to empower students with insightful information by allowing them to rate courses and instructors based on various criteria. Students can provide detailed feedback on course materials, teaching methodologies, and class structures. By promoting transparency in teaching styles, the application equips students with essential knowledge to navigate their academic journey effectively and prepare for their professional careers. It addresses the common issue of students enrolling in courses without a clear understanding of what to expect, thereby helping them avoid potential regrets.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Through Niner Rate, students can create, modify, and delete their reviews as needed, ensuring that feedback remains relevant and up-to-date. Additionally, the platform offers a comprehensive overview of ratings for courses offered by the College of Computing and Informatics (CCI), providing valuable insights into the educational landscape within the CCI domain. Ultimately, Niner Rate serves as a valuable resource for students seeking to make informed decisions and optimize their learning experiences.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### Developed Using:
 
-## Deploy on Vercel
+![Next.js]
+![NextAuth.js]
+![React]
+![React DOM]
+![React Radix UI]
+![react-icons]
+![React OAuth Google]
+![react-google-button]
+![TypeScript]
+![JavaScript]
+![Node.js]
+![Tailwind CSS]
+![tailwind-merge]
+![tailwindcss-animate]
+![PostCSS]
+![CSS]
+![MongoDB]
+![Mongoose]
+![Autoprefixer]
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Deployment:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+The project has been deployed using [AWS Amplify](https://aws.amazon.com/amplify/) . You can access Niner Rate [here](https://main.d3f94s6am880j3.amplifyapp.com/).
 
-## Branching
+### Contributors:
 
-When picking up a new story, create a new branch off of master, the name should be a description of what the story entails
-A pull request will need to be created and approved by other members before merging the feature branch with master
-We cannot edit main branch directly and make commits
+Oliver Briot, Kamaal Hassan, Willy Xiong, Txuj Yang, Jai Vang
 
-## File Structure
+<!-- MARKDOWN LINKS & IMAGES -->
 
-Inside the src/app/ directory is where we create new routes.
-Each route needs a page.tsx and layout.tsx (The one not in a folder is the default / route)
-
-layout.tsx: This is a component that wraps around the main content of your pages. It's typically used to apply a consistent set of components or styling across multiple pages. For example, if you have a navigation bar or a footer that appears on every page, you would include it in your layout component.
-
-page.tsx: This represents an individual page in your application. Each page.tsx file is associated with a specific route in your app. When a user navigates to that route, the associated page.tsx file is rendered inside the layout.tsx component
-
-/components: For reusable UI components. Organize further into subdirectories as needed (e.g., /common, /layout).
-
-/styles: Contains your CSS or Sass files. You might have global styles here and individual component styles close to their respective components.
-
-/public: For static files like images, fonts, etc., that Next.js can serve directly.
-
-/lib or /utils: For utility functions and library code that's not specific to any single component.
-
-/hooks: Custom React hooks to encapsulate and reuse stateful logic.
-
-/services: For code that interfaces with external services, like fetching data from an API.
-
-/models (if applicable): Definitions for the shapes of data you're using, possibly mirroring your database models.
-
-/context (if using React Context): For global state management files.
+[Next.js]: https://img.shields.io/badge/-Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white
+[NextAuth.js]: https://img.shields.io/badge/-NextAuth.js-000000?style=for-the-badge&logo=next.js&logoColor=white
+[React]: https://img.shields.io/badge/-React-61DAFB?style=for-the-badge&logo=react&logoColor=white
+[React DOM]: https://img.shields.io/badge/-React_DOM-61DAFB?style=for-the-badge&logo=react&logoColor=white
+[React Radix UI]: https://img.shields.io/badge/-React_Radix_UI-61DAFB?style=for-the-badge&logo=react&logoColor=white
+[React OAuth Google]: https://img.shields.io/badge/-React_OAuth_Google-61DAFB?style=for-the-badge&logo=google&logoColor=white
+[react-google-button]: https://img.shields.io/badge/-react_google_button-61DAFB?style=for-the-badge&logo=google&logoColor=white
+[react-icons]: https://img.shields.io/badge/-react_icons-61DAFB?style=for-the-badge&logo=react&logoColor=white
+[TypeScript]: https://img.shields.io/badge/-TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white
+[JavaScript]: https://img.shields.io/badge/-JavaScript-yellow?style=for-the-badge&logo=javascript
+[Node.js]: https://img.shields.io/badge/node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white
+[Tailwind CSS]: https://img.shields.io/badge/-Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white
+[tailwind-merge]: https://img.shields.io/badge/-tailwind_merge-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white
+[tailwindcss-animate]: https://img.shields.io/badge/-tailwindcss_animate-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white
+[PostCSS]: https://img.shields.io/badge/-PostCSS-DD3A0A?style=for-the-badge&logo=postcss&logoColor=white
+[CSS]: https://img.shields.io/badge/-CSS-blue?style=for-the-badge&logo=css3
+[MongoDB]: https://img.shields.io/badge/-MongoDB-880000?style=for-the-badge&logo=mongodb&logoColor=white
+[Mongoose]: https://img.shields.io/badge/Mongoose-880000?style=for-the-badge&logo=mongoose&logoColor=FFFFFF
+[Autoprefixer]: https://img.shields.io/badge/-Autoprefixer-DD3A0A?style=for-the-badge&logo=autoprefixer&logoColor=white
