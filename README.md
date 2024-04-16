@@ -6,24 +6,29 @@
 2. [Screenshots Overview](#screenshots-overview)
 3. [Project Overview](#project-overview)
 4. [Key Features](#key-features)
-5. [Project Management with Trello](#project-management-with-trello)
-6. [Version Control with GitHub](#version-control-with-github)
-7. [UML Behavioral Diagrams](#uml-behavioral-diagrams)
+5. [Project Proposal Presentation](#project-proposal-presentation)
+6. [Sprints](#sprints)
+   - [Sprint 1: Low Fidelity Prototype Video](#sprint-1-low-fidelity-prototype-video)
+   - [Sprint 2: Working Prototype Video](#sprint-2-working-prototype-video)
+   - [Sprint 3: Working Web Application Video](#sprint-2-working-prototype-video)
+7. [Project Management with Trello](#project-management-with-trello)
+8. [Version Control with GitHub](#version-control-with-github)
+9. [UML Behavioral Diagrams](#uml-behavioral-diagrams)
    - [Behavioral Diagram](#behavioral-diagram)
    - [Use Case Diagram](#use-case-diagram)
-8. [Design Documentation](#design-documentation)
-   - [Architectural Overview](#architectural-overview)
-   - [Subsystem Architecture](#subsystem-architecture)
-   - [Deployment Architecture](#deployment-architecture)
-   - [Persistent Data Storage](#persistent-data-storage)
-   - [Global Control Flow](#global-control-flow)
-   - [Time Dependency](#time-dependency)
-   - [Concurrency](#concurrency)
-   - [Detailed System Design Static View](#detailed-system-design-static-view)
-   - [Detailed System Design Dynamic View](#detailed-system-design-dynamic-view)
-9. [Developed Using](#developed-using)
-10. [Deployment](#deployment)
-11. [Contributors](#contributors)
+10. [Design Documentation](#design-documentation)
+    - [Architectural Overview](#architectural-overview)
+    - [Subsystem Architecture](#subsystem-architecture)
+    - [Deployment Architecture](#deployment-architecture)
+    - [Persistent Data Storage](#persistent-data-storage)
+    - [Global Control Flow](#global-control-flow)
+    - [Time Dependency](#time-dependency)
+    - [Concurrency](#concurrency)
+    - [Detailed System Design Static View](#detailed-system-design-static-view)
+    - [Detailed System Design Dynamic View](#detailed-system-design-dynamic-view)
+11. [Developed Using](#developed-using)
+12. [Deployment](#deployment)
+13. [Contributors](#contributors)
 
 ## Screenshots Overview:
 
@@ -90,6 +95,34 @@ This application stands as the capstone project for the ITSC 4155 Software Devel
 `Modular Architecture`: The app is built using Component-Based Architecture (CBA), ensuring modularity, scalability, and maintainability for future development and enhancements.
 
 `Continuous Deployment`: Deployment on AWS Amplify enables continuous integration and deployment, allowing for quick and seamless updates to the app without downtime.
+
+## Project Proposal Presentation:
+
+Our team presented our project proposal to the professor, outlining our ambitious plans for the application. This crucial video captures the moment when our team members shared their vision and objectives with the instructor. Following a thorough evaluation, the proposal received the green light, laying the foundation for our project's journey. Watch the video to witness the inception of our project and the approval of our proposal, setting the stage for the development ahead.
+
+[![Pre-Sprint 1: Project Proposal Presentation Video](https://img.youtube.com/vi/A4PKzP4kibw/0.jpg)](https://www.youtube.com/watch?v=A4PKzP4kibw)
+
+## Sprints:
+
+For this project, the team employed an agile development approach, working on the application in sprints. During each sprint, various team members implemented different features and functionalities in the app. Explore the progress made during each sprint below to see how this app evolved from a low-level prototype to a fully functional web application.
+
+#### Sprint 1: Low Fidelity Prototype Video:
+
+In this video, we discuss and demonstrate how our app might look and function in its early stages during a walkthrough of the low fidelity prototype. It provides a comprehensive overview of the key features, user interface design, and user interactions envisioned for the application. Feel free to watch the video below to get a glimpse of our app's potential and the direction we're heading towards!
+
+[![Sprint 1: Low Fidelity Prototype Video](https://img.youtube.com/vi/B4_puPzGyIg/0.jpg)](https://www.youtube.com/watch?v=B4_puPzGyIg)
+
+#### Sprint 2: Working Prototype Video:
+
+In Sprint 2, our team proudly presents a functioning prototype of our application. This video demonstration showcases the progress we've made since the initial stages, highlighting key features and functionalities implemented during this sprint. Watch the video to see how our app is shaping up and get a glimpse of what's to come in future iterations.
+
+[![Sprint 2: Working Prototype Video](https://img.youtube.com/vi/XK9iuYExhoY/0.jpg)](https://www.youtube.com/watch?v=XK9iuYExhoY)
+
+#### Sprint 3: Working Web Application Video:
+
+While Sprint 3 marks our final demo milestone, our journey towards completing the project is still ongoing with several more weeks ahead. In this preview video, we offer a glimpse into the current state of our web application, showcasing the latest features and refinements implemented during this sprint. Stay tuned as we continue to iterate and enhance our application towards its final release.
+
+[![Sprint 3L Working Web Application Video](https://img.youtube.com/vi/XK9iuExhoY/0.jpg)](https://www.youtube.com/watch?v=X9iuYExhoY)
 
 ## Project Management with Trello:
 
