@@ -11,12 +11,13 @@
    - [Sprint 1: Low Fidelity Prototype Video](#sprint-1-low-fidelity-prototype-video)
    - [Sprint 2: Working Prototype Video](#sprint-2-working-prototype-video)
    - [Sprint 3: Working Web Application Video](#sprint-2-working-prototype-video)
-7. [Project Management with Trello](#project-management-with-trello)
-8. [Version Control with GitHub](#version-control-with-github)
-9. [UML Behavioral Diagrams](#uml-behavioral-diagrams)
-   - [Behavioral Diagram](#behavioral-diagram)
-   - [Use Case Diagram](#use-case-diagram)
-10. [Design Documentation](#design-documentation)
+7. [Project Pitch](#project-pitch)
+8. [Project Management with Trello](#project-management-with-trello)
+9. [Version Control with GitHub](#version-control-with-github)
+10. [UML Behavioral Diagrams](#uml-behavioral-diagrams)
+    - [Behavioral Diagram](#behavioral-diagram)
+    - [Use Case Diagram](#use-case-diagram)
+11. [Design Documentation](#design-documentation)
     - [Architectural Overview](#architectural-overview)
     - [Subsystem Architecture](#subsystem-architecture)
     - [Deployment Architecture](#deployment-architecture)
@@ -26,9 +27,9 @@
     - [Concurrency](#concurrency)
     - [Detailed System Design Static View](#detailed-system-design-static-view)
     - [Detailed System Design Dynamic View](#detailed-system-design-dynamic-view)
-11. [Developed Using](#developed-using)
-12. [Deployment](#deployment)
-13. [Contributors](#contributors)
+12. [Developed Using](#developed-using)
+13. [Deployment](#deployment)
+14. [Contributors](#contributors)
 
 ## Screenshots Overview:
 
@@ -123,6 +124,12 @@ In Sprint 2, our team proudly presents a functioning prototype of our applicatio
 While Sprint 3 marks our final demo milestone, our journey towards completing the project is still ongoing with several more weeks ahead. In this preview video, we offer a glimpse into the current state of our web application, showcasing the latest features and refinements implemented during this sprint. Stay tuned as we continue to iterate and enhance our application towards its final release.
 
 [![Sprint 3L Working Web Application Video](https://img.youtube.com/vi/XK9iuExhoY/0.jpg)](https://www.youtube.com/watch?v=X9iuYExhoY)
+
+## Project Pitch
+
+Our pitch introduces an exciting project that encapsulates innovation and creativity through a video presentation, showcasing its unique value proposition and distinguishing features in the market. At its core, our pitch provides a clear explanation of our project's purpose, addressing specific needs and emphasizing the benefits of our solution. Additionally, we aim to make our pitch memorable by conveying our team's passion and dedication, sharing insights into our collaborative process and commitment to delivering excellence. Ultimately, our pitch tells a story of innovation, teamwork, and the potential impact of our project on the world, aiming to leave a lasting impression that resonates with our audience beyond the elevator ride. Watch the video below to see our project pitch.
+
+[![Niner Rate Project Pitch](https://img.youtube.com/vi/99U4aBvs1Qs/0.jpg)](https://www.youtube.com/watch?v=99U4aBvs1Qs)
 
 ## Project Management with Trello:
 
