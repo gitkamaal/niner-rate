@@ -20,26 +20,26 @@ export async function POST(req) {
     const requestBody = await req.json();
     console.log('Request Body:', requestBody); // Log the request body
 
-    const { courseName, studentName, rating, review } = requestBody;
-
+    const { courseId, studentName, rating, review } = requestBody;
     // Find a matching course based on the courseName
-    const course = await db.collection('courses').findOne({ code: courseName });
+    const course = await db
+      .collection('courses')
+      .findOne({ _id: new ObjectId(courseId) });
+
     console.log('Course:', course); // Log the found course
 
     if (course) {
-      console.log('Match found for course:', courseName); // Log if a match is found
-
       // Create a new ObjectId for the review
       const reviewId = new ObjectId();
 
       // Create a new review object
       const newReview = {
         _id: reviewId, // Assign a new ObjectId as the review's _id
-        courseName,
+        courseId, // Add the courseId to the review
         rating,
         studentName,
         review,
-        createdAt: new Date()
+        createdAt: new Date(),
       };
 
       // Insert the new review into the database
@@ -63,12 +63,15 @@ export async function POST(req) {
       }
     } else {
       console.log('No match found for course:', courseName); // Log if no match is found
-      return new Response(JSON.stringify({ message: 'No matching course found' }), {
-        status: 404,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      return new Response(
+        JSON.stringify({ message: 'No matching course found' }),
+        {
+          status: 404,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
     }
   } catch (error) {
     console.error('Failed to post review:', error); // Log any errors that occur
@@ -83,42 +86,45 @@ export async function POST(req) {
 
 // Define the route handler for fetching reviews for a specific course
 export async function GET(req) {
-    try {
-      // Connect to the database
-      const db = await connectToDatabase();
-  
-      // Log the request query parameters
-      console.log('Request Query:', req.query);
-  
-      // Extract courseName from query parameters
-      const { courseName } = req.query || {}; // Destructure courseName or default to an empty object if req.query is undefined
-      console.log('Course Name:', courseName); // Log the courseName
-  
-      // Check if courseName is defined
-      if (!courseName) {
-        throw new Error('No courseName provided in the query parameters');
-      }
-  
-      // Fetch reviews for the specified courseName
-      const reviews = await db.collection('reviews').find({ courseName }).toArray();
-  
-      // Respond with the fetched reviews
-      return new Response(JSON.stringify(reviews), {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-    } catch (error) {
-      console.error('Failed to fetch reviews:', error);
-      return new Response(JSON.stringify({ message: 'Failed to fetch reviews' }), {
+  try {
+    // Connect to the database
+    const db = await connectToDatabase();
+
+    // Log the request query parameters
+    console.log('Request Query:', req.query);
+
+    // Extract courseName from query parameters
+    const { courseName } = req.query || {}; // Destructure courseName or default to an empty object if req.query is undefined
+    console.log('Course Name:', courseName); // Log the courseName
+
+    // Check if courseName is defined
+    if (!courseName) {
+      throw new Error('No courseName provided in the query parameters');
+    }
+
+    // Fetch reviews for the specified courseName
+    const reviews = await db
+      .collection('reviews')
+      .find({ courseName })
+      .toArray();
+
+    // Respond with the fetched reviews
+    return new Response(JSON.stringify(reviews), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  } catch (error) {
+    console.error('Failed to fetch reviews:', error);
+    return new Response(
+      JSON.stringify({ message: 'Failed to fetch reviews' }),
+      {
         status: 500,
         headers: {
           'Content-Type': 'application/json',
         },
-      });
-    }
+      }
+    );
+  }
 }
-
-
-  

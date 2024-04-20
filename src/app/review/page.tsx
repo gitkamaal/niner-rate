@@ -8,12 +8,22 @@ const Page: React.FC = () => {
   const [studentName, setStudentName] = useState('');
   const [rating, setRating] = useState<number | null>(null);
   const [review, setReview] = useState('');
-
-   // Function to handle form submission
-   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  // Function to handle form submission
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
+      // Fetch the course by its name from the server
+      const courseResponse = await fetch(
+        `/api/courseByName?code=${courseName}`
+      );
+      const courseData = await courseResponse.json();
+
+      if (!courseData._id) {
+        console.error('No matching course found for name:', courseName);
+        return;
+      }
+
       // Send the form data to the server
       const response = await fetch('/api/review', {
         method: 'POST',
@@ -21,7 +31,7 @@ const Page: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          courseName,
+          courseId: courseData._id,
           studentName,
           rating,
           review,

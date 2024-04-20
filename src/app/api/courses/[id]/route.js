@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../mongodb';
 import { ObjectId } from 'mongodb';
 
@@ -20,13 +19,19 @@ export async function GET(req) {
     // Query for the specific course by its ObjectId
     const course = await db.collection('courses').findOne({ _id: objectId });
 
+    // Query for the reviews associated with the course
+    const reviews = await db
+      .collection('reviews')
+      .find({ courseId: id })
+      .toArray();
+
     // If the course doesn't exist, return a 404 response
     if (!course) {
       return new Response('Course not found', { status: 404 });
     }
 
     // Return the course data
-    return new Response(JSON.stringify(course), {
+    return new Response(JSON.stringify({ course, reviews }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
