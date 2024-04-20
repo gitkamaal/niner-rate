@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import Navbar from '@/components/navbar';
+import { useSession } from 'next-auth/react';
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -22,6 +23,53 @@ export default function CoursePage() {
   const [searchParams] = useSearchParams();
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState('description');
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+  const [savedCourses, setSavedCourses] = useState<string[]>([]);
+  const [isCourseSaved, setIsCourseSaved] = useState(false);
+
+
+  useEffect(() => {
+    const fetchSavedCourses = async () => {
+      if (!userId) return;
+      try {
+        const response = await fetch(`/api/savedCourses/${userId}`);
+        if (!response.ok) throw new Error('Failed to fetch saved courses');
+        const courses = await response.json();
+        const courseCodes = courses.map((course: { code: string }) => course.code); 
+        setSavedCourses(courseCodes);
+        setIsCourseSaved(courseCodes.includes(course?.code ?? ''));
+      } catch (error) {
+        console.error('Failed to fetch saved courses:', error);
+      }
+    };
+
+    fetchSavedCourses();
+}, [userId, course?.code]);
+  
+
+  const handleSaveOrDeleteCourse = async (courseCode, isSaved) => {
+    try {
+      const method = isSaved ? 'DELETE' : 'POST';
+      const response = await fetch(`/api/savedCourses/${userId}`, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ courseCode }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to modify saved courses');
+      }
+
+      const updatedCourses = await response.json();
+      setSavedCourses(updatedCourses);
+      setIsCourseSaved(!isSaved);
+    } catch (error) {
+      console.error(`Error ${isSaved ? 'deleting' : 'saving'} course:`, error);
+    }
+  };
 
   useEffect(() => {
     // Assuming your URL structure is /courses/{id}
@@ -55,6 +103,13 @@ export default function CoursePage() {
               <h2 className="text-2xl font-bold text-[#005035] mb-4">
                 {course.code + ": " + course.title}
               </h2>
+
+              <button
+                onClick={() => handleSaveOrDeleteCourse(course.code, isCourseSaved)}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#005035] hover:bg-[#003e2d] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+              >
+                {isCourseSaved ? 'Delete Course' : 'Save Course'}
+              </button>
 
               <div className="mt-6">
                 <NavigationMenu>

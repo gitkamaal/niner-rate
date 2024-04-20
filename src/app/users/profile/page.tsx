@@ -26,6 +26,21 @@ const Profile = () => {
     lastName: '',
   });
 
+  const fetchSavedCourses = async () => {
+    if (!userId) return;
+    try {
+      const response = await fetch(`/api/savedCourses/${userId}`);
+      if (!response.ok) {
+        console.error('Failed to fetch saved courses');
+        return;
+      }
+      const data = await response.json();
+      setSavedCoursesDetails(data);
+    } catch (error) {
+      console.error('Failed to fetch saved courses:', error);
+    }
+  };
+
   useEffect(() => {
     if (userProfile) {
       setLocalUserProfile({
@@ -34,23 +49,32 @@ const Profile = () => {
       });
     }
 
-    console.log("user id " + userId);
-
     if (userProfile && userProfile.userId && activeTab === 'savedCourses') {
-      console.log("user profile id " + userProfile.userId);
-      const fetchSavedCourses = async () => {
-        const response = await fetch(`/api/savedCourses/${userId}`);
-        if (!response.ok) {
-          console.error('Failed to fetch saved courses');
-          return;
-        }
-        const data = await response.json();
-        setSavedCoursesDetails(data);
-      };
-
       fetchSavedCourses();
     }
-  }, [userProfile, activeTab]);
+  }, [userProfile, activeTab, userId]);
+
+  const handleDeleteCourse = async (courseCode) => {
+    try {
+      const response = await fetch(`/api/savedCourses/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({courseCode}),
+      });
+  
+      const result = await response.json(); 
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to delete course');
+      }
+
+      console.log('Updated saved courses:', result); 
+      fetchSavedCourses(); 
+    } catch (error) {
+      console.error('Error deleting course:', error);
+    }
+  };
 
   const handleEditToggle = (field) => {
     setEditMode((prevState) => ({ ...prevState, [field]: !prevState[field] }));
@@ -72,6 +96,8 @@ const Profile = () => {
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
   };
+
+  
 
   if (status === 'loading') {
     return <p>Loading...</p>;
@@ -167,7 +193,11 @@ const Profile = () => {
               <p>{course.code}</p>
             </div>
             <div>
-              <a href={`/courses/${course._id}`} className="text-[#005035] hover:underline">View</a>
+            <a href={`/courses/${course._id}`} className="text-[#005035] hover:underline mr-4">View</a>
+            <button onClick={() => handleDeleteCourse(course.code)}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#005035] hover:bg-[#003e2d] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500">
+            Delete Course
+            </button>
             </div>
           </div>
         ))}
