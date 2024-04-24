@@ -1,9 +1,16 @@
 'use client';
 import Navbar from '@/components/navbar';
 import React, { useState } from 'react';
+import { useSession } from 'next-auth/react';
 
 const Page: React.FC = () => {
   // State variables to store form input values
+  const { data: session } = useSession(); // Destructure session from the useSession hook
+
+  // Guard clauses to handle different states of the session
+  if (!session) {
+    return <div>Session is not available</div>;
+  }
   const [courseName, setCourseName] = useState('');
   const [studentName, setStudentName] = useState('');
   const [rating, setRating] = useState<number | null>(null);
@@ -32,11 +39,14 @@ const Page: React.FC = () => {
         },
         body: JSON.stringify({
           courseId: courseData._id,
-          studentName,
+          studentName: session.user.firstName,
           rating,
           review,
+          userId: session.user.id,
         }),
       });
+
+      console.log('User Session ID:', session.user.id)
 
       // Check if the response is successful
       if (response.ok) {

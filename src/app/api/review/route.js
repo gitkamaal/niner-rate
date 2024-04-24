@@ -1,58 +1,56 @@
 import clientPromise from '../../../../mongodb';
 import { ObjectId } from 'mongodb';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]/route';
 
-// Function to connect to the MongoDB database
 async function connectToDatabase() {
   const client = await clientPromise;
   return client.db('niner-rate');
 }
 
-// Define the route handler for creating a new review
 export async function POST(req) {
   try {
-    console.log('POST request received'); // Log when a POST request is received
+    console.log('POST request received');
 
-    // Connect to the database
+    const session = await getServerSession(authOptions);
+    console.log("User session: ", session);
+
+    if (!session) {
+      throw new Error('User is not authenticated');
+    }
+
     const db = await connectToDatabase();
-    console.log('Connected to the database'); // Log when connected to the database
+    console.log('Connected to the database');
 
-    // Extract data from the request body
     const requestBody = await req.json();
-    console.log('Request Body:', requestBody); // Log the request body
+    console.log('Request Body:', requestBody);
 
     const { courseId, studentName, rating, review } = requestBody;
-    // Find a matching course based on the courseName
-    const course = await db
-      .collection('courses')
-      .findOne({ _id: new ObjectId(courseId) });
 
-    console.log('Course:', course); // Log the found course
+    const course = await db.collection('courses').findOne({ _id: new ObjectId(courseId) });
+
+    console.log('Course:', course);
 
     if (course) {
-      // Create a new ObjectId for the review
       const reviewId = new ObjectId();
-
-      // Create a new review object
+      
       const newReview = {
-        _id: reviewId, // Assign a new ObjectId as the review's _id
-        courseId, // Add the courseId to the review
+        _id: reviewId,
+        courseId,
         rating,
         studentName,
         review,
+        host: session.user.id, 
         createdAt: new Date(),
       };
 
-      // Insert the new review into the database
       const result = await db.collection('reviews').insertOne(newReview);
-      console.log('Insert Result:', result); // Log the insert result
+      console.log('Insert Result:', result);
 
-      // Check if the insertion was successful
       if (result.insertedId) {
-        console.log('Inserted review:', newReview); // Log the inserted review
-
-        // Respond with the inserted review
+        console.log('Inserted review:', newReview);
         return new Response(JSON.stringify(newReview), {
-          status: 201, // 201 Created status code for successful creation
+          status: 201,
           headers: {
             'Content-Type': 'application/json',
           },
@@ -62,7 +60,7 @@ export async function POST(req) {
         return new Response('Failed to insert review', { status: 500 });
       }
     } else {
-      console.log('No match found for course:', courseName); // Log if no match is found
+      console.log('No match found for course');
       return new Response(
         JSON.stringify({ message: 'No matching course found' }),
         {
@@ -74,7 +72,7 @@ export async function POST(req) {
       );
     }
   } catch (error) {
-    console.error('Failed to post review:', error); // Log any errors that occur
+    console.error('Failed to post review:', error);
     return new Response(JSON.stringify({ message: 'Failed to post review' }), {
       status: 500,
       headers: {
@@ -84,7 +82,7 @@ export async function POST(req) {
   }
 }
 
-// Define the route handler for fetching reviews for a specific course
+
 export async function GET(req) {
   try {
     // Connect to the database
