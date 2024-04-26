@@ -16,6 +16,8 @@ interface Course {
   code: string;
   title: string;
   courseDescription: string;
+  unccCatalogID: string;
+  unccCourseID: string;
 }
 
 export default function CoursePage() {
@@ -91,6 +93,50 @@ export default function CoursePage() {
     fetchData();
   }, [pathname]); // Depend on pathname to refetch when it changes
 
+  const handleUpdateCourse = async (event) => {
+    event.preventDefault();
+    const courseId = pathname.split('/')[2];
+    const formData = new FormData(event.target);
+    const updatedCourseData = Object.fromEntries(formData.entries());
+
+    fetch(`/api/courses/${courseId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedCourseData),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        alert(`Failed: ${data.message}`);
+      } else {
+        alert('Course updated successfully!');
+        if (course) {
+          const updatedData = Object.fromEntries(Object.entries(updatedCourseData).map(([key, value]) => [key, String(value)]));
+          setCourse({ ...course, ...updatedData, _id: course._id, code: updatedData.code || '' });
+        }
+      }
+    })
+    .catch(error => console.error('Error updating course:', error));
+};
+
+// delete course by id
+const handleDeleteCourse = async () => {
+    const courseId = pathname.split('/')[2];
+    try {
+        const response = await fetch(`/api/courses/${courseId}`, {
+            method: 'DELETE',
+        });
+        if (!response.ok) {
+            throw new Error('Failed to delete course');
+        }
+        alert('Course deleted successfully');
+        // Redirect to the courses page
+        window.location.href = '/courses';
+    } catch (error) {
+        console.error('Failed to delete course:', error);
+    }
+}
+
   if (!course) return <div>Loading...</div>;
 
   return (
@@ -103,6 +149,7 @@ export default function CoursePage() {
               <h2 className="text-2xl font-bold text-[#005035] mb-4">
                 {course.code + ": " + course.title}
               </h2>
+              
 
               {session && (
                 <button
@@ -111,6 +158,17 @@ export default function CoursePage() {
                 >
                   {isCourseSaved ? 'Delete Course' : 'Save Course'}
                 </button>
+              )}
+
+              {session?.user?.id === 'admin' && (
+                
+                  <button
+                    onClick={handleDeleteCourse}
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                  >
+                    Delete Course From DB
+                  </button>
+                
               )}
 
               <div className="mt-6">
@@ -149,12 +207,26 @@ export default function CoursePage() {
                 <p className="text-base text-gray-700 dark:text-gray-300 mt-4 leading-7">
                   {course.courseDescription}
                 </p>
+                
+                
               )}
               {activeTab === 'reviews' && (
                 <p className="text-base text-gray-700 dark:text-gray-300 mt-2">
                   Reviews: {/* Render reviews here */}
                 </p>
               )}
+
+              {/* Display update form only for admin */}
+              {session?.user?.id === 'admin' && (
+                            <form onSubmit={handleUpdateCourse}>
+                                <input defaultValue={course.code} name="code" placeholder="Course Code" required />
+                                <input defaultValue={course.title} name="title" placeholder="Title" required />
+                                <textarea defaultValue={course.courseDescription} name="courseDescription" placeholder="Course Description" required />
+                                <input defaultValue={course.unccCatalogID} name="unccCatalogID" placeholder="Catalog ID" required />
+                                <input defaultValue={course.unccCourseID} name="unccCourseID" placeholder="Course ID" required />
+                                <button type="submit" className="btn btn-primary">Update Course</button>
+                            </form>
+                        )}
             </div>
           </div>
         </main>
