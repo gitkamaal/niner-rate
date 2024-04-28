@@ -23,6 +23,7 @@ interface Review {
   rating: number;
   review: string;
   studentName: string;
+  createdAt: string;
 }
 
 export default function CoursePage() {
@@ -54,6 +55,8 @@ export default function CoursePage() {
     fetchData();
   }, [pathname]); // Depend on pathname to refetch when it changes
 
+  const overallRating = reviews.length > 0 ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length : 0;
+
   if (!course) return <div>Loading...</div>;
 
   return (
@@ -66,6 +69,22 @@ export default function CoursePage() {
               <h2 className="text-2xl font-bold text-[#005035] mb-4">
                 {course.code + ': ' + course.title}
               </h2>
+              <div className="flex items-center mb-2">
+                <span className="text-md font-medium  mr-1">Course Rating: </span>
+                <span className="text-[32px] font-bold text-[#005035]">{overallRating.toFixed(1)}</span>
+                <span className="text-md font-bold mr-1 text-gray-500">/5</span>
+                <div className="flex items-center ml-2">
+                  {[...Array(5)].map((_, i) =>
+                    i < overallRating ? (
+                      <StarFilledIcon key={i} className="w-5 h-5 text-[#A49665]" />
+                    ) : (
+                      <StarIcon key={i} className="w-4 h-4 text-[#A49665]" />
+                    ))}
+                </div>
+              </div>
+              <div className="text-md ">
+                Based on <span className="font-bold">{reviews.length}</span> reviews
+              </div>
 
               <div className="mt-6 mb-6">
                 <NavigationMenu>
@@ -73,11 +92,10 @@ export default function CoursePage() {
                     <NavigationMenuItem>
                       <NavigationMenuLink
                         onClick={() => setActiveTab('description')}
-                        className={`group inline-flex h-9 w-max items-center justify-center rounded-md  px-4 py-2 text-sm font-medium transition-colors ${
-                          activeTab === 'description'
-                            ? 'bg-gray-500 text-white'
-                            : 'hover:bg-gray-100 hover:text-gray-900'
-                        }`}
+                        className={`group inline-flex h-9 w-max items-center justify-center rounded-md  px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'description'
+                          ? 'bg-gray-500 text-white'
+                          : 'hover:bg-gray-100 hover:text-gray-900'
+                          }`}
                         href="#"
                       >
                         Description
@@ -86,11 +104,10 @@ export default function CoursePage() {
                     <NavigationMenuItem>
                       <NavigationMenuLink
                         onClick={() => setActiveTab('reviews')}
-                        className={`group inline-flex h-9 w-max items-center justify-center rounded-md  px-4 py-2 text-sm font-medium transition-colors ${
-                          activeTab === 'reviews'
-                            ? 'bg-gray-500 text-white'
-                            : 'hover:bg-gray-100 hover:text-gray-900'
-                        }`}
+                        className={`group inline-flex h-9 w-max items-center justify-center rounded-md  px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'reviews'
+                          ? 'bg-gray-500 text-white'
+                          : 'hover:bg-gray-100 hover:text-gray-900'
+                          }`}
                         href="#"
                       >
                         Reviews
@@ -106,27 +123,37 @@ export default function CoursePage() {
               )}
               {activeTab === 'reviews' && (
                 <div className="p-4">
-                  {reviews.map((review) => (
-                    <div key={review._id} className="mb-4">
-                      <div className="flex items-center mb-2">
-                        <div className="flex items-center mr-2">
-                          {[...Array(5)].map((_, i) =>
-                            i < review.rating ? (
-                              <StarFilledIcon key={i} className="w-4 h-4" />
-                            ) : (
-                              <StarIcon key={i} className="w-4 h-4" />
-                            )
-                          )}
+                  {reviews.map((review) => {
+                    const date = new Date(review.createdAt);
+                    const formattedDate = date.toLocaleDateString(); // Format the date
+                    return (
+                      <div key={review._id} className="border bg-gray-100 border-gray-300 rounded-md mb-4 p-4">
+                        <div className="flex items-center mb-2">
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center">
+                              <span className="text-[25px] font-bold mr-1">{review.rating}</span> 
+                              <span className="text-sm mr-2">/5</span> 
+                              {[...Array(5)].map((_, i) =>
+                                i < review.rating ? (
+                                  <StarFilledIcon key={i} className="w-4 h-4 text-[#A49665]" />
+                                ) : (
+                                  <StarIcon key={i} className="w-4 h-4 text-[#A49665]" />
+                                ))}
+                            </div>
+                            <div>
+                              <span className="text-sm text-gray-500">{formattedDate}</span>
+                            </div>
+                          </div>
                         </div>
                         <span className="text-sm font-medium">
                           {review.studentName}
                         </span>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {review.review}
+                        </p>
                       </div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {review.review}
-                      </p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

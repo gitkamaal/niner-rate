@@ -1,29 +1,30 @@
 'use client';
-import Navbar from '@/components/navbar';
 import React, { useState } from 'react';
 import { useSession } from 'next-auth/react';
+import Navbar from '@/components/navbar';
+import SearchCourses from './searchCourse'; // Import the SearchCourses component
 
 const Page: React.FC = () => {
-  // State variables to store form input values
-  const { data: session } = useSession(); // Destructure session from the useSession hook
+  const { data: session } = useSession();
 
   // Guard clauses to handle different states of the session
   if (!session) {
     return <div>Session is not available</div>;
   }
+
   const [courseName, setCourseName] = useState('');
   const [studentName, setStudentName] = useState('');
   const [rating, setRating] = useState<number | null>(null);
   const [review, setReview] = useState('');
+  const [searchTerm, setSearchTerm] = useState(''); // State variable to track the search term
+
   // Function to handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
       // Fetch the course by its name from the server
-      const courseResponse = await fetch(
-        `/api/courseByName?code=${courseName}`
-      );
+      const courseResponse = await fetch(`/api/courseByName?code=${courseName}`);
       const courseData = await courseResponse.json();
 
       if (!courseData._id) {
@@ -55,6 +56,7 @@ const Page: React.FC = () => {
         setStudentName('');
         setRating(null);
         setReview('');
+        setSearchTerm(''); // Reset the search term (not working currently)
         console.log('submitted');
         // Handle success, e.g., show a success message
       } else {
@@ -69,6 +71,14 @@ const Page: React.FC = () => {
   // Function to handle clicking on a star
   const handleStarClick = (index: number) => {
     setRating(index + 1); // Increment index to make rating start from 1
+  };
+
+  // Function to handle course search
+  const handleCourseSearch = (selectedCourse: string) => {
+    // Call the searchCourses function with the entered value
+    console.log('Searching for course:', selectedCourse);
+    setCourseName(selectedCourse); // Set the selected course name
+    setSearchTerm(selectedCourse); // Update the search term
   };
 
   return (
@@ -87,6 +97,15 @@ const Page: React.FC = () => {
           <div>
             <label>
               Course Name:
+              <SearchCourses
+                className="w-full p-2 mb-4 hover:border-[#A49665] focus:border-[#A49665] border rounded-lg outline-none"
+                placeholder="Search for a course..."
+                searchCourses={handleCourseSearch}
+                searchTerm={searchTerm}
+              />
+            </label>
+            <label style={{ display: 'none' }}>
+              Selected Course:
               <input
                 type="text"
                 value={courseName}
@@ -115,7 +134,7 @@ const Page: React.FC = () => {
                   xmlns="http://www.w3.org/2000/svg"
                   className={`h-6 w-6 cursor-pointer ${
                     index < (rating || 0)
-                      ? 'fill-current text-yellow-500'
+                      ? 'fill-current text-yellow-500' 
                       : 'text-gray-400'
                   }`}
                   viewBox="0 0 24 24"
@@ -148,3 +167,5 @@ const Page: React.FC = () => {
 };
 
 export default Page;
+
+
