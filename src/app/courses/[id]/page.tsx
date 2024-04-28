@@ -3,19 +3,23 @@
 import { useEffect, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import Navbar from '@/components/navbar';
+import { useSession } from 'next-auth/react';
+import { StarFilledIcon, StarIcon } from '@radix-ui/react-icons';
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
 } from '@/components/ui/navigation-menu';
-import { StarFilledIcon, StarIcon } from '@radix-ui/react-icons';
+
 
 interface Course {
   _id: string;
   code: string;
   title: string;
   courseDescription: string;
+  unccCatalogID: string;
+  unccCourseID: string;
 }
 
 interface Review {
@@ -28,10 +32,14 @@ interface Review {
 
 export default function CoursePage() {
   const [course, setCourse] = useState<Course | null>(null);
-  const [reviews, setReviews] = useState<Review[]>([]);
   const [searchParams] = useSearchParams();
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState('description');
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+  const [savedCourses, setSavedCourses] = useState<string[]>([]);
+  const [isCourseSaved, setIsCourseSaved] = useState(false);
+  const [reviews, setReviews] = useState<Review[]>([]);
 
   useEffect(() => {
     // Assuming your URL structure is /courses/{id}
@@ -54,6 +62,111 @@ export default function CoursePage() {
 
     fetchData();
   }, [pathname]); // Depend on pathname to refetch when it changes
+
+  useEffect(() => {
+    const fetchSavedCourses = async () => {
+      if (!userId) return;
+      try {
+        const response = await fetch(`/api/savedCourses/${userId}`);
+        if (!response.ok) throw new Error('Failed to fetch saved courses');
+        const courses = await response.json();
+        const courseCodes = courses.map((course: { code: string }) => course.code); 
+        setSavedCourses(courseCodes);
+        setIsCourseSaved(courseCodes.includes(course?.code ?? ''));
+      } catch (error) {
+        console.error('Failed to fetch saved courses:', error);
+      }
+    };
+
+    fetchSavedCourses();
+}, [userId, course?.code]);
+
+const handleSaveOrDeleteCourse = async (courseCode, isSaved) => {
+  try {
+    const method = isSaved ? 'DELETE' : 'POST';
+    const response = await fetch(`/api/savedCourses/${userId}`, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ courseCode }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to modify saved courses');
+    }
+
+    const updatedCourses = await response.json();
+    setSavedCourses(updatedCourses);
+    setIsCourseSaved(!isSaved);
+  } catch (error) {
+    console.error(`Error ${isSaved ? 'deleting' : 'saving'} course:`, error);
+  }
+};
+
+useEffect(() => {
+  // Assuming your URL structure is /courses/{id}
+  const courseId = pathname.split('/')[2]; // Adjust based on your actual URL structure
+  // Alternatively, if you have the ID in search parameters: const courseId = searchParams.get('id');
+
+  const fetchData = async () => {
+    if (!courseId) return;
+    try {
+      const response = await fetch(`/api/courses/${courseId}`);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const data: Course = await response.json();
+      setCourse(data);
+    } catch (error) {
+      console.error('Failed to fetch course:', error);
+    }
+  };
+
+  fetchData();
+}, [pathname]); // Depend on pathname to refetch when it changes
+
+const handleUpdateCourse = async (event) => {
+  event.preventDefault();
+  const courseId = pathname.split('/')[2];
+  const formData = new FormData(event.target);
+  const updatedCourseData = Object.fromEntries(formData.entries());
+
+  fetch(`/api/courses/${courseId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updatedCourseData),
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.error) {
+      alert(`Failed: ${data.message}`);
+    } else {
+      alert('Course updated successfully!');
+      if (course) {
+        const updatedData = Object.fromEntries(Object.entries(updatedCourseData).map(([key, value]) => [key, String(value)]));
+        setCourse({ ...course, ...updatedData, _id: course._id, code: updatedData.code || '' });
+      }
+    }
+  })
+  .catch(error => console.error('Error updating course:', error));
+};
+
+// delete course by id
+const handleDeleteCourse = async () => {
+  const courseId = pathname.split('/')[2];
+  try {
+      const response = await fetch(`/api/courses/${courseId}`, {
+          method: 'DELETE',
+      });
+      if (!response.ok) {
+          throw new Error('Failed to delete course');
+      }
+      alert('Course deleted successfully');
+      // Redirect to the courses page
+      window.location.href = '/courses';
+  } catch (error) {
+      console.error('Failed to delete course:', error);
+  }
+}
 
   const overallRating = reviews.length > 0 ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length : 0;
 
@@ -85,6 +198,26 @@ export default function CoursePage() {
               <div className="text-md ">
                 Based on <span className="font-bold">{reviews.length}</span> reviews
               </div>
+
+              {session && (
+                <button
+                  onClick={() => handleSaveOrDeleteCourse(course.code, isCourseSaved)}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#005035] hover:bg-[#003e2d] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                >
+                  {isCourseSaved ? 'Delete Course' : 'Save Course'}
+                </button>
+              )}
+
+              {session?.user?.id === 'admin' && (
+                
+                  <button
+                    onClick={handleDeleteCourse}
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                  >
+                    Delete Course From DB
+                  </button>
+                
+              )}
 
               <div className="mt-6 mb-6">
                 <NavigationMenu>
@@ -156,6 +289,17 @@ export default function CoursePage() {
                   })}
                 </div>
               )}
+               {/* Display update form only for admin */}
+               {session?.user?.id === 'admin' && (
+                            <form onSubmit={handleUpdateCourse}>
+                                <input defaultValue={course.code} name="code" placeholder="Course Code" required />
+                                <input defaultValue={course.title} name="title" placeholder="Title" required />
+                                <textarea defaultValue={course.courseDescription} name="courseDescription" placeholder="Course Description" required />
+                                <input defaultValue={course.unccCatalogID} name="unccCatalogID" placeholder="Catalog ID" required />
+                                <input defaultValue={course.unccCourseID} name="unccCourseID" placeholder="Course ID" required />
+                                <button type="submit" className="btn btn-primary">Update Course</button>
+                            </form>
+                        )}
             </div>
           </div>
         </main>
