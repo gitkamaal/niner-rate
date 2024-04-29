@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useUser } from '../../contexts/UserContext';
-
+// test
 interface UserProfile {
   email: string;
   firstName: string;
