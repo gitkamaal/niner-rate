@@ -304,34 +304,6 @@ const Profile = () => {
                 </div>
               </div>
             )}
-            <h2>Saved Courses</h2>
-            <div>
-              {savedCoursesDetails.map((course) => (
-                <div
-                  key={course.code}
-                  className="flex items-center justify-between border-b-2 py-2"
-                >
-                  <div>
-                    <h3>{course.title}</h3>
-                    <p>{course.code}</p>
-                  </div>
-                  <div>
-                    <a
-                      href={`/courses/${course._id}`}
-                      className="text-[#005035] hover:underline mr-4"
-                    >
-                      View
-                    </a>
-                    <button
-                      onClick={() => handleDeleteCourse(course.code)}
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#005035] hover:bg-[#003e2d] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
-                    >
-                      Delete Course
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         </main>
       </div>
