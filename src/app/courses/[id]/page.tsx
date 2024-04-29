@@ -223,17 +223,6 @@ export default function CoursePage() {
                 reviews
               </div>
 
-              {session && (
-                <button
-                  onClick={() =>
-                    handleSaveOrDeleteCourse(course.code, isCourseSaved)
-                  }
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#005035] hover:bg-[#003e2d] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
-                >
-                  {isCourseSaved ? 'Delete Course' : 'Save Course'}
-                </button>
-              )}
-
               {session?.user?.id === 'admin' && (
                 <button
                   onClick={handleDeleteCourse}

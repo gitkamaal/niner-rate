@@ -1,7 +1,7 @@
 import clientPromise from '../../../../mongodb';
 import { ObjectId } from 'mongodb';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/route';
+import { authOptions } from '../../config/auth-config';
 
 async function connectToDatabase() {
   const client = await clientPromise;
@@ -13,7 +13,7 @@ export async function POST(req) {
     console.log('POST request received');
 
     const session = await getServerSession(authOptions);
-    console.log("User session: ", session);
+    console.log('User session: ', session);
 
     if (!session) {
       throw new Error('User is not authenticated');
@@ -27,20 +27,22 @@ export async function POST(req) {
 
     const { courseId, studentName, rating, review } = requestBody;
 
-    const course = await db.collection('courses').findOne({ _id: new ObjectId(courseId) });
+    const course = await db
+      .collection('courses')
+      .findOne({ _id: new ObjectId(courseId) });
 
     console.log('Course:', course);
 
     if (course) {
       const reviewId = new ObjectId();
-      
+
       const newReview = {
         _id: reviewId,
         courseId,
         rating,
         studentName,
         review,
-        host: session.user.id, 
+        host: session.user.id,
         createdAt: new Date(),
       };
 
@@ -81,7 +83,6 @@ export async function POST(req) {
     });
   }
 }
-
 
 export async function GET(req) {
   try {
