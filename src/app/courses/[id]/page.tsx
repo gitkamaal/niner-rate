@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import Navbar from '@/components/navbar';
 import { useSession } from 'next-auth/react';
+
+import { StarFilledIcon, StarIcon } from '@radix-ui/react-icons';
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -20,6 +22,14 @@ interface Course {
   unccCourseID: string;
 }
 
+interface Review {
+  _id: string;
+  rating: number;
+  review: string;
+  studentName: string;
+  createdAt: string;
+}
+
 export default function CoursePage() {
   const [course, setCourse] = useState<Course | null>(null);
   const [searchParams] = useSearchParams();
@@ -29,26 +39,7 @@ export default function CoursePage() {
   const userId = session?.user?.id;
   const [savedCourses, setSavedCourses] = useState<string[]>([]);
   const [isCourseSaved, setIsCourseSaved] = useState(false);
-
-
-  useEffect(() => {
-    const fetchSavedCourses = async () => {
-      if (!userId) return;
-      try {
-        const response = await fetch(`/api/savedCourses/${userId}`);
-        if (!response.ok) throw new Error('Failed to fetch saved courses');
-        const courses = await response.json();
-        const courseCodes = courses.map((course: { code: string }) => course.code); 
-        setSavedCourses(courseCodes);
-        setIsCourseSaved(courseCodes.includes(course?.code ?? ''));
-      } catch (error) {
-        console.error('Failed to fetch saved courses:', error);
-      }
-    };
-
-    fetchSavedCourses();
-}, [userId, course?.code]);
-  
+  const [reviews, setReviews] = useState<Review[]>([]);
 
   const handleSaveOrDeleteCourse = async (courseCode, isSaved) => {
     try {
@@ -83,8 +74,10 @@ export default function CoursePage() {
       try {
         const response = await fetch(`/api/courses/${courseId}`);
         if (!response.ok) throw new Error('Network response was not ok');
-        const data: Course = await response.json();
-        setCourse(data);
+        const data = await response.json();
+        console.log(data); // Log the data
+        setCourse(data.course);
+        setReviews(data.reviews);
       } catch (error) {
         console.error('Failed to fetch course:', error);
       }
@@ -92,6 +85,26 @@ export default function CoursePage() {
 
     fetchData();
   }, [pathname]); // Depend on pathname to refetch when it changes
+
+  useEffect(() => {
+    const fetchSavedCourses = async () => {
+      if (!userId) return;
+      try {
+        const response = await fetch(`/api/savedCourses/${userId}`);
+        if (!response.ok) throw new Error('Failed to fetch saved courses');
+        const courses = await response.json();
+        const courseCodes = courses.map(
+          (course: { code: string }) => course.code
+        );
+        setSavedCourses(courseCodes);
+        setIsCourseSaved(courseCodes.includes(course?.code ?? ''));
+      } catch (error) {
+        console.error('Failed to fetch saved courses:', error);
+      }
+    };
+
+    fetchSavedCourses();
+  }, [userId, course?.code]);
 
   const handleUpdateCourse = async (event) => {
     event.preventDefault();
@@ -104,38 +117,53 @@ export default function CoursePage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedCourseData),
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error) {
-        alert(`Failed: ${data.message}`);
-      } else {
-        alert('Course updated successfully!');
-        if (course) {
-          const updatedData = Object.fromEntries(Object.entries(updatedCourseData).map(([key, value]) => [key, String(value)]));
-          setCourse({ ...course, ...updatedData, _id: course._id, code: updatedData.code || '' });
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          alert(`Failed: ${data.message}`);
+        } else {
+          alert('Course updated successfully!');
+          if (course) {
+            const updatedData = Object.fromEntries(
+              Object.entries(updatedCourseData).map(([key, value]) => [
+                key,
+                String(value),
+              ])
+            );
+            setCourse({
+              ...course,
+              ...updatedData,
+              _id: course._id,
+              code: updatedData.code || '',
+            });
+          }
         }
-      }
-    })
-    .catch(error => console.error('Error updating course:', error));
-};
+      })
+      .catch((error) => console.error('Error updating course:', error));
+  };
 
-// delete course by id
-const handleDeleteCourse = async () => {
+  // delete course by id
+  const handleDeleteCourse = async () => {
     const courseId = pathname.split('/')[2];
     try {
-        const response = await fetch(`/api/courses/${courseId}`, {
-            method: 'DELETE',
-        });
-        if (!response.ok) {
-            throw new Error('Failed to delete course');
-        }
-        alert('Course deleted successfully');
-        // Redirect to the courses page
-        window.location.href = '/courses';
+      const response = await fetch(`/api/courses/${courseId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete course');
+      }
+      alert('Course deleted successfully');
+      // Redirect to the courses page
+      window.location.href = '/courses';
     } catch (error) {
-        console.error('Failed to delete course:', error);
+      console.error('Failed to delete course:', error);
     }
-}
+  };
+
+  const overallRating =
+    reviews.length > 0
+      ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length
+      : 0;
 
   if (!course) return <div>Loading...</div>;
 
@@ -147,13 +175,14 @@ const handleDeleteCourse = async () => {
           <div className="grid grid-cols-1 gap-6">
             <div className="p-8 bg-white rounded-lg shadow-md">
               <h2 className="text-2xl font-bold text-[#005035] mb-4">
-                {course.code + ": " + course.title}
+                {course.code + ': ' + course.title}
               </h2>
-              
 
               {session && (
                 <button
-                  onClick={() => handleSaveOrDeleteCourse(course.code, isCourseSaved)}
+                  onClick={() =>
+                    handleSaveOrDeleteCourse(course.code, isCourseSaved)
+                  }
                   className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#005035] hover:bg-[#003e2d] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
                 >
                   {isCourseSaved ? 'Delete Course' : 'Save Course'}
@@ -161,17 +190,49 @@ const handleDeleteCourse = async () => {
               )}
 
               {session?.user?.id === 'admin' && (
-                
-                  <button
-                    onClick={handleDeleteCourse}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
-                  >
-                    Delete Course From DB
-                  </button>
-                
+                <button
+                  onClick={handleDeleteCourse}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                >
+                  Delete Course From DB
+                </button>
+              )}
+              <div className="flex items-center mb-2">
+                <span className="text-md font-medium  mr-1">
+                  Course Rating:{' '}
+                </span>
+                <span className="text-[32px] font-bold text-[#005035]">
+                  {overallRating.toFixed(1)}
+                </span>
+                <span className="text-md font-bold mr-1 text-gray-500">/5</span>
+                <div className="flex items-center ml-2">
+                  {[...Array(5)].map((_, i) =>
+                    i < overallRating ? (
+                      <StarFilledIcon
+                        key={i}
+                        className="w-5 h-5 text-[#A49665]"
+                      />
+                    ) : (
+                      <StarIcon key={i} className="w-4 h-4 text-[#A49665]" />
+                    )
+                  )}
+                </div>
+              </div>
+              <div className="text-md ">
+                Based on <span className="font-bold">{reviews.length}</span>{' '}
+                reviews
+              </div>
+
+              {session?.user?.id === 'admin' && (
+                <button
+                  onClick={handleDeleteCourse}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                >
+                  Delete Course From DB
+                </button>
               )}
 
-              <div className="mt-6">
+              <div className="mt-6 mb-6">
                 <NavigationMenu>
                   <NavigationMenuList>
                     <NavigationMenuItem>
@@ -207,26 +268,95 @@ const handleDeleteCourse = async () => {
                 <p className="text-base text-gray-700 dark:text-gray-300 mt-4 leading-7">
                   {course.courseDescription}
                 </p>
-                
-                
               )}
               {activeTab === 'reviews' && (
-                <p className="text-base text-gray-700 dark:text-gray-300 mt-2">
-                  Reviews: {/* Render reviews here */}
-                </p>
+                <div className="p-4">
+                  {reviews.map((review) => {
+                    const date = new Date(review.createdAt);
+                    const formattedDate = date.toLocaleDateString(); // Format the date
+                    return (
+                      <div
+                        key={review._id}
+                        className="border bg-gray-100 border-gray-300 rounded-md mb-4 p-4"
+                      >
+                        <div className="flex items-center mb-2">
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center">
+                              <span className="text-[25px] font-bold mr-1">
+                                {review.rating}
+                              </span>
+                              <span className="text-sm mr-2">/5</span>
+                              {[...Array(5)].map((_, i) =>
+                                i < review.rating ? (
+                                  <StarFilledIcon
+                                    key={i}
+                                    className="w-4 h-4 text-[#A49665]"
+                                  />
+                                ) : (
+                                  <StarIcon
+                                    key={i}
+                                    className="w-4 h-4 text-[#A49665]"
+                                  />
+                                )
+                              )}
+                            </div>
+                            <div>
+                              <span className="text-sm text-gray-500">
+                                {formattedDate}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <span className="text-sm font-medium">
+                          {review.studentName}
+                        </span>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {review.review}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
 
               {/* Display update form only for admin */}
               {session?.user?.id === 'admin' && (
-                            <form onSubmit={handleUpdateCourse}>
-                                <input defaultValue={course.code} name="code" placeholder="Course Code" required />
-                                <input defaultValue={course.title} name="title" placeholder="Title" required />
-                                <textarea defaultValue={course.courseDescription} name="courseDescription" placeholder="Course Description" required />
-                                <input defaultValue={course.unccCatalogID} name="unccCatalogID" placeholder="Catalog ID" required />
-                                <input defaultValue={course.unccCourseID} name="unccCourseID" placeholder="Course ID" required />
-                                <button type="submit" className="btn btn-primary">Update Course</button>
-                            </form>
-                        )}
+                <form onSubmit={handleUpdateCourse}>
+                  <input
+                    defaultValue={course.code}
+                    name="code"
+                    placeholder="Course Code"
+                    required
+                  />
+                  <input
+                    defaultValue={course.title}
+                    name="title"
+                    placeholder="Title"
+                    required
+                  />
+                  <textarea
+                    defaultValue={course.courseDescription}
+                    name="courseDescription"
+                    placeholder="Course Description"
+                    required
+                  />
+                  <input
+                    defaultValue={course.unccCatalogID}
+                    name="unccCatalogID"
+                    placeholder="Catalog ID"
+                    required
+                  />
+                  <input
+                    defaultValue={course.unccCourseID}
+                    name="unccCourseID"
+                    placeholder="Course ID"
+                    required
+                  />
+                  <button type="submit" className="btn btn-primary">
+                    Update Course
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </main>
