@@ -286,7 +286,7 @@ const Profile = () => {
                           />
                           <button
                             onClick={() => handleSave('firstName')}
-                            className="ml-4 text-[#005035] hover:underline"
+                            className="btn ml-4 cursor-pointer text-[#005035] bg-green-500 hover:bg-green-600 rounded-md px-4 py-2"
                           >
                             Save
                           </button>
@@ -294,12 +294,12 @@ const Profile = () => {
                       ) : (
                         <>
                           <p>{localUserProfile.firstName}</p>
-                          <a
+                          <button
                             onClick={() => handleEditToggle('firstName')}
-                            className="ml-4 cursor-pointer text-[#005035] hover:underline"
+                            className="btn ml-4 cursor-pointer text-[#005035] bg-blue-500 hover:bg-blue-600 rounded-md px-4 py-2"
                           >
                             Edit
-                          </a>
+                          </button>
                         </>
                       )}
                     </div>
@@ -317,7 +317,7 @@ const Profile = () => {
                           />
                           <button
                             onClick={() => handleSave('lastName')}
-                            className="ml-4 text-[#005035] hover:underline"
+                            className="btn ml-4 cursor-pointer text-[#005035] bg-green-500 hover:bg-green-600 rounded-md px-4 py-2"
                           >
                             Save
                           </button>
@@ -325,12 +325,12 @@ const Profile = () => {
                       ) : (
                         <>
                           <p>{localUserProfile.lastName}</p>
-                          <a
+                          <button
                             onClick={() => handleEditToggle('lastName')}
-                            className="ml-4 cursor-pointer text-[#005035] hover:underline"
+                            className="btn ml-4 cursor-pointer text-[#005035] bg-blue-500 hover:bg-blue-600 rounded-md px-4 py-2"
                           >
                             Edit
-                          </a>
+                          </button>
                         </>
                       )}
                     </div>
