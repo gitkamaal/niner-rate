@@ -365,7 +365,11 @@ const Profile = () => {
                           View
                         </a>
                         <button
-                          onClick={() => handleDeleteCourse(course.code)}
+                          onClick={() => {
+                            if (window.confirm('Are you sure you want to delete this course?')) {
+                              handleDeleteCourse(course.code);
+                            }
+                          }}
                           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
                         >
                           Delete Course
