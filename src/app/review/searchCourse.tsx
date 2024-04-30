@@ -65,7 +65,7 @@ const SearchCourses: React.FC<SearchInputProps> = ({
       />
       {suggestions.length > 0 && (
         <ul
-          className="  absolute z-10 w-2/12 bg-white border border-gray-300 rounded-lg mt-1 shadow-lg "
+          className="  absolute z-10 w-72 bg-white border border-gray-300 rounded-lg mt-1 shadow-lg "
           style={{ zIndex: 1000 }}
         >
           {' '}
