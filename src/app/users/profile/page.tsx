@@ -360,7 +360,7 @@ const Profile = () => {
                       <div>
                       <button
                         onClick={() => window.location.href=`/courses/${course._id}`}
-                        className="btn text-[#005035] mr-4 bg-blue-500 hover:bg-blue-600 rounded-md px-4 py-2"
+                        className="btn text-[#005035] mr-4 bg-gray-500 hover:bg-gray-600 rounded-md px-4 py-2"
                       >
                         View
                       </button>
