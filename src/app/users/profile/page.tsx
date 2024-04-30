@@ -4,6 +4,9 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useUser } from '../../contexts/UserContext';
+import { StarFilledIcon, StarIcon } from '@radix-ui/react-icons';
+import Pagination from '@/components/pagination';
+import ConfirmModal from '@/components/confirmModal';
 
 interface UserProfile {
   email: string;
@@ -16,8 +19,10 @@ interface UserProfile {
 
 interface UserReview {
   host: string;
+  courseId: string;
   rating: number;
   review: string;
+  createdAt: string;
 }
 
 const Profile = () => {
@@ -37,6 +42,50 @@ const Profile = () => {
     firstName: '',
     lastName: '',
   });
+
+  const [courseTitle, setCourseTitle] = useState<{ [key: string]: string }>({});
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // state variables to manage the visibility of the confirmation modal and the course to delete
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState<string | null>(null);
+
+  // Functions to handle the confirmation modal actions: confirm and cancel
+  const handleConfirmDelete = () => {
+    if (courseToDelete) {
+      handleDeleteCourse(courseToDelete);
+    }
+    setShowConfirmModal(false);
+    setCourseToDelete(null);
+  };
+  
+  const handleCancelDelete = () => {
+    setShowConfirmModal(false);
+    setCourseToDelete(null);
+  };
+
+  // Fetch course titles based on courseId
+  const fetchCourseTitles = async () => {
+    try {
+      const response = await fetch('/api/courses');
+      if (!response.ok) {
+        console.error('Failed to fetch courses');
+        return;
+      }
+      const courses = await response.json();
+      const courseTitleMap = courses.reduce((acc, course) => {
+        acc[course._id] = course.title;
+        return acc;
+      }, {});
+      setCourseTitle(courseTitleMap);
+    } catch (error) {
+      console.error('Failed to fetch courses:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCourseTitles();
+  }, []);
 
   useEffect(() => {
     const fetchUserReviews = async () => {
@@ -132,19 +181,61 @@ const Profile = () => {
     setActiveTab(tab);
   };
 
+  const ITEMS_PER_PAGE = 12;
+
+  const totalPages = Math.ceil(userReviews.length / ITEMS_PER_PAGE);
+  const displayuserReviews = userReviews.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
   // Define the renderUserReviews function outside of the return statement
   const renderUserReviews = () => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const reviewsToDisplay = userReviews.slice(startIndex, endIndex);
+
     return (
       <div>
-        <h2>User Reviews</h2>
-        <div>
-          {userReviews.map((review) => (
-            <div key={review.host}>
-              <p>Rating: {review.rating}</p>
-              <p>Review: {review.review}</p>
+        <h2 className="text-xl font-semibold mb-4">User Reviews</h2>
+        <div className="space-y-4">
+          {reviewsToDisplay.map((review) => (
+            <div key={review.host} className="border border-gray-200 p-4 rounded-md">
+              <div className="flex items-center justify-between w-full">
+                <h3 className="text-lg font-semibold">{courseTitle[review.courseId]}</h3>
+                <p className="text-gray-600">Date: {new Date(review.createdAt).toLocaleDateString()}</p>
+              </div>
+              <div className="flex items-center">
+                <p className="text-md text-gray-600 mr-2">Rating:</p>
+                <span className="text-[25px] font-bold text-[#005035]">{review.rating}</span>
+                <span className="text-sm">/5</span>
+
+                <div className="flex ml-2 ">
+
+                {[...Array(5)].map((_, i) =>
+                    i < review.rating ? (
+                      <StarFilledIcon
+                        key={i}
+                        className="w-5 h-5 text-[#A49665]"
+                      />
+                    ) : (
+                      <StarIcon
+                        key={i}
+                        className="w-4 h-4 text-[#A49665] mt-0.5"
+                      />
+                    )
+                  )}
+                </div>
+              </div>
+              <p className="text-md text-gray-500 mt-3 mb-2">{review.review}</p>
             </div>
           ))}
         </div>
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
       </div>
     );
   };
@@ -214,7 +305,7 @@ const Profile = () => {
                           />
                           <button
                             onClick={() => handleSave('firstName')}
-                            className="ml-4 text-[#005035] hover:underline"
+                            className="btn ml-4 cursor-pointer text-[#005035] bg-green-500 hover:bg-green-600 rounded-md px-4 py-2"
                           >
                             Save
                           </button>
@@ -222,12 +313,12 @@ const Profile = () => {
                       ) : (
                         <>
                           <p>{localUserProfile.firstName}</p>
-                          <a
+                          <button
                             onClick={() => handleEditToggle('firstName')}
-                            className="ml-4 cursor-pointer text-[#005035] hover:underline"
+                            className="btn ml-4 cursor-pointer text-[#005035] bg-blue-500 hover:bg-blue-600 rounded-md px-4 py-2"
                           >
                             Edit
-                          </a>
+                          </button>
                         </>
                       )}
                     </div>
@@ -245,7 +336,7 @@ const Profile = () => {
                           />
                           <button
                             onClick={() => handleSave('lastName')}
-                            className="ml-4 text-[#005035] hover:underline"
+                            className="btn ml-4 cursor-pointer text-[#005035] bg-green-500 hover:bg-green-600 rounded-md px-4 py-2"
                           >
                             Save
                           </button>
@@ -253,12 +344,12 @@ const Profile = () => {
                       ) : (
                         <>
                           <p>{localUserProfile.lastName}</p>
-                          <a
+                          <button
                             onClick={() => handleEditToggle('lastName')}
-                            className="ml-4 cursor-pointer text-[#005035] hover:underline"
+                            className="btn ml-4 cursor-pointer text-[#005035] bg-blue-500 hover:bg-blue-600 rounded-md px-4 py-2"
                           >
                             Edit
-                          </a>
+                          </button>
                         </>
                       )}
                     </div>
@@ -286,15 +377,18 @@ const Profile = () => {
                         <p>{course.code}</p>
                       </div>
                       <div>
-                        <a
-                          href={`/courses/${course._id}`}
-                          className="text-[#005035] hover:underline mr-4"
+                        <button
+                          onClick={() => window.location.href=`/courses/${course._id}`}
+                          className="btn text-[#005035] mr-4 bg-gray-500 hover:bg-gray-600 rounded-md px-4 py-2"
                         >
                           View
-                        </a>
+                        </button>                     
                         <button
-                          onClick={() => handleDeleteCourse(course.code)}
-                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#005035] hover:bg-[#003e2d] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                          onClick={() => {
+                            setCourseToDelete(course.code);
+                            setShowConfirmModal(true);
+                          }}
+                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
                         >
                           Delete Course
                         </button>
@@ -307,6 +401,13 @@ const Profile = () => {
           </div>
         </main>
       </div>
+      {showConfirmModal && (
+        <ConfirmModal
+          message={`Are you sure you want to delete "${courseToDelete}: ${savedCoursesDetails.find(course => course.code === courseToDelete)?.title}" from Saved Course?`} 
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
     </>
   );
 };

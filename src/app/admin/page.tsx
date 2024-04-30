@@ -63,37 +63,41 @@ export default function AdminPage() {
 
   return (
     <>
-      <div>
-        <Navbar />
-        <h1>Admin Panel</h1>
-        <h2>Add Course</h2>
-        <form onSubmit={handleCourseSubmit}>
-          <input name="code" placeholder="Course Code" required />
-          <input name="title" placeholder="Title" required />
-          <textarea
-            name="courseDescription"
-            placeholder="Course Description"
-            required
-          />
-          <input name="unccCatalogID" placeholder="Catalog ID" required />
-          <input name="unccCourseID" placeholder="Course ID" required />
-          <button type="submit">Add Course</button>
-        </form>
+      <Navbar />
+      <div className="flex flex-col items-center min-h-screen bg-gray-100 dark:bg-gray-900">
+        <main className="mt-20 py-8 px-4 w-full max-w-4xl">
+          <div className="grid grid-cols-1 gap-6">
+            <div className="p-8 bg-white rounded-lg shadow-md">
+              <h1 className="text-3xl font-bold text-[#005035] mb-4">Admin Panel</h1>
 
-        <h2> Add Instructor</h2>
-        <form onSubmit={handleInstructorSubmit}>
-          <input name="name" placeholder="Name" required />
-          <input name="title" placeholder="Title" required />
-          <input name="department" placeholder="Department" required />
-          <input name="phone" placeholder="Phone" required />
-          <input name="email" placeholder="Email" required />
-          <input name="office" placeholder="Office" required />
-          <input
-            name="rateMyProfessorsId"
-            placeholder="Rate My Professors ID"
-          />
-          <button type="submit">Add Instructor</button>
-        </form>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-3">Add Course</h2>
+                <form onSubmit={handleCourseSubmit} className="space-y-4">
+                  <input className="input-field" name="code" placeholder="Course Code" required />
+                  <input className="input-field" name="title" placeholder="Title" required />
+                  <textarea className="input-field" name="courseDescription" placeholder="Course Description" required />
+                  <input className="input-field" name="unccCatalogID" placeholder="Catalog ID" required />
+                  <input className="input-field" name="unccCourseID" placeholder="Course ID" required />
+                  <button type="submit" className="btn btn-primary">Add Course</button>
+                </form>
+              </div>
+
+              <div>
+                <h2 className="text-2xl font-bold mb-3">Add Instructor</h2>
+                <form onSubmit={handleInstructorSubmit} className="space-y-4">
+                  <input className="input-field" name="name" placeholder="Name" required />
+                  <input className="input-field" name="title" placeholder="Title" required />
+                  <input className="input-field" name="department" placeholder="Department" required />
+                  <input className="input-field" name="phone" placeholder="Phone" required />
+                  <input className="input-field" name="email" placeholder="Email" required />
+                  <input className="input-field" name="office" placeholder="Office" required />
+                  <input className="input-field" name="rateMyProfessorsId" placeholder="Rate My Professors ID" />
+                  <button type="submit" className="btn btn-primary">Add Instructor</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
     </>
   );

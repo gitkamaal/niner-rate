@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import Navbar from '@/components/navbar';
 import { useSession } from 'next-auth/react';
+import Pagination from '@/components/pagination';
+import ConfirmModal from '@/components/confirmModal';
 
 import { StarFilledIcon, StarIcon } from '@radix-ui/react-icons';
 import {
@@ -40,6 +42,38 @@ export default function CoursePage() {
   const [savedCourses, setSavedCourses] = useState<string[]>([]);
   const [isCourseSaved, setIsCourseSaved] = useState(false);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showUpdateForm, setShowUpdateForm] = useState(false);
+  const ITEMS_PER_PAGE = 12;
+
+  // Variables to manage the visibility of the modal and the course to delete
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState<string | null>(null);
+
+  const totalPages = Math.ceil(reviews.length / ITEMS_PER_PAGE);
+  const displayReviews = reviews.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Functions to handle the confirmation modal actions: confirm and cancel
+  const handleConfirmDelete = () => {
+    if (courseToDelete) {
+      handleDeleteCourse(courseToDelete);
+    }
+    setShowConfirmModal(false);
+    setCourseToDelete(null);
+  };
+  
+  const handleCancelDelete = () => {
+    setShowConfirmModal(false);
+    setCourseToDelete(null);
+  };
+
 
   const handleSaveOrDeleteCourse = async (courseCode, isSaved) => {
     try {
@@ -137,14 +171,14 @@ export default function CoursePage() {
               code: updatedData.code || '',
             });
           }
+          setShowUpdateForm(false);
         }
       })
       .catch((error) => console.error('Error updating course:', error));
   };
 
   // delete course by id
-  const handleDeleteCourse = async () => {
-    const courseId = pathname.split('/')[2];
+  const handleDeleteCourse = async (courseId) => {
     try {
       const response = await fetch(`/api/courses/${courseId}`, {
         method: 'DELETE',
@@ -180,10 +214,13 @@ export default function CoursePage() {
 
               {session && (
                 <button
-                  onClick={() =>
-                    handleSaveOrDeleteCourse(course.code, isCourseSaved)
-                  }
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#005035] hover:bg-[#003e2d] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                  onClick={() => {
+                    if (!isCourseSaved || window.confirm('Are you sure you want to delete this course from your Saved Courses?')) {
+                      handleSaveOrDeleteCourse(course.code, isCourseSaved);
+                    }
+                  }}
+                  style={{ marginRight: '10px' }}
+                  className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 ${isCourseSaved ? 'btn-delete hover:bg-b71c1c' : 'btn-save hover:bg-003e2d'}`}
                 >
                   {isCourseSaved ? 'Delete Course' : 'Save Course'}
                 </button>
@@ -191,12 +228,24 @@ export default function CoursePage() {
 
               {session?.user?.id === 'admin' && (
                 <button
-                  onClick={handleDeleteCourse}
+                  onClick={() => {
+                    setCourseToDelete(course._id); // Set the course ID to delete
+                    setShowConfirmModal(true); // Show the confirmation modal
+                  }}
+                  style={{ marginRight: '10px' }}
                   className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
                 >
                   Delete Course From DB
                 </button>
+                )}
+
+              {session?.user?.id === 'admin' && (
+              <button onClick={() => setShowUpdateForm(!showUpdateForm)}
+                className={`btn ${showUpdateForm ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'} mb-4`}>
+              {showUpdateForm ? 'Cancel Edit' : 'Edit Course'}
+              </button>
               )}
+
               <div className="flex items-center mb-2">
                 <span className="text-md font-medium  mr-1">
                   Course Rating:{' '}
@@ -222,16 +271,6 @@ export default function CoursePage() {
                 Based on <span className="font-bold">{reviews.length}</span>{' '}
                 reviews
               </div>
-
-              {session?.user?.id === 'admin' && (
-                <button
-                  onClick={handleDeleteCourse}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
-                >
-                  Delete Course From DB
-                </button>
-              )}
-
               <div className="mt-6 mb-6">
                 <NavigationMenu>
                   <NavigationMenuList>
@@ -271,9 +310,9 @@ export default function CoursePage() {
               )}
               {activeTab === 'reviews' && (
                 <div className="p-4">
-                  {reviews.map((review) => {
+                  {displayReviews.map((review) => {
                     const date = new Date(review.createdAt);
-                    const formattedDate = date.toLocaleDateString(); // Format the date
+                    const formattedDate = date.toLocaleDateString();
                     return (
                       <div
                         key={review._id}
@@ -290,77 +329,65 @@ export default function CoursePage() {
                                 i < review.rating ? (
                                   <StarFilledIcon
                                     key={i}
-                                    className="w-4 h-4 text-[#A49665]"
+                                    className="w-5 h-5 text-[#A49665]"
                                   />
                                 ) : (
-                                  <StarIcon
-                                    key={i}
-                                    className="w-4 h-4 text-[#A49665]"
-                                  />
+                                  <StarIcon key={i} className="w-4 h-4 text-[#A49665]" />
                                 )
                               )}
                             </div>
-                            <div>
+                              <div>
                               <span className="text-sm text-gray-500">
                                 {formattedDate}
                               </span>
                             </div>
                           </div>
                         </div>
-                        <span className="text-sm font-medium">
-                          {review.studentName}
-                        </span>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <span className="text-sm font-medium">{review.studentName}</span>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
                           {review.review}
                         </p>
                       </div>
                     );
                   })}
+                  <Pagination
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                  />
                 </div>
               )}
+              
 
               {/* Display update form only for admin */}
-              {session?.user?.id === 'admin' && (
-                <form onSubmit={handleUpdateCourse}>
-                  <input
-                    defaultValue={course.code}
-                    name="code"
-                    placeholder="Course Code"
-                    required
-                  />
-                  <input
-                    defaultValue={course.title}
-                    name="title"
-                    placeholder="Title"
-                    required
-                  />
-                  <textarea
-                    defaultValue={course.courseDescription}
-                    name="courseDescription"
-                    placeholder="Course Description"
-                    required
-                  />
-                  <input
-                    defaultValue={course.unccCatalogID}
-                    name="unccCatalogID"
-                    placeholder="Catalog ID"
-                    required
-                  />
-                  <input
-                    defaultValue={course.unccCourseID}
-                    name="unccCourseID"
-                    placeholder="Course ID"
-                    required
-                  />
-                  <button type="submit" className="btn btn-primary">
-                    Update Course
-                  </button>
-                </form>
+              {showUpdateForm && (
+              <form onSubmit={handleUpdateCourse} className="mt-6">
+              <div className="space-y-4">
+              <input defaultValue={course.code} name="code" placeholder="Course Code" required className="input-field"/>
+
+              <input defaultValue={course.title} name="title" placeholder="Title" required className="input-field"/>
+
+              <textarea defaultValue={course.courseDescription} name="courseDescription" placeholder="Course Description" required className="input-field h-32"/>
+
+              <input defaultValue={course.unccCatalogID} name="unccCatalogID" placeholder="Catalog ID" required className="input-field"/>
+
+              <input defaultValue={course.unccCourseID} name="unccCourseID" placeholder="Course ID" required className="input-field"/>
+
+              <button type="submit" className="btn btn-primary"> Update Course </button>
+            </div>
+            </form>
               )}
             </div>
           </div>
         </main>
       </div>
+      {showConfirmModal && (
+          <ConfirmModal
+            message={`Are you sure you want to delete "${course.code + ': ' + course.title}" from the data base?`} 
+            onConfirm={handleConfirmDelete}
+            onCancel={handleCancelDelete}
+          />
+        )}
     </>
   );
 }
