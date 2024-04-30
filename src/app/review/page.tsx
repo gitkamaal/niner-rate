@@ -46,6 +46,49 @@ const Page: React.FC = () => {
         return;
       }
 
+      // prompt user if require field is missing
+      if (!courseName.trim()) {
+        setAlert({
+          show: true,
+          title: 'Error',
+          description: 'Please provide a course name.',
+          type: 'destructive',
+        });
+        setTimeout(
+          () => setAlert({ show: false, title: '', description: '', type: null }),
+          5000
+        );
+        return;
+      }
+      // prompt user if require field is missing
+      if (!rating || rating === 0) {
+        setAlert({
+          show: true,
+          title: 'Error',
+          description: 'Please provide a rating.',
+          type: 'destructive',
+        });
+        setTimeout(
+          () => setAlert({ show: false, title: '', description: '', type: null }),
+          5000
+        );
+        return;
+      }
+      // prompt user if require field is missing
+      if (!review.trim()) {
+        setAlert({
+          show: true,
+          title: 'Error',
+          description: 'Please provide a review.',
+          type: 'destructive',
+        });
+        setTimeout(
+          () => setAlert({ show: false, title: '', description: '', type: null }),
+          5000
+        );
+        return;
+      }
+
       // Send the form data to the server
       const response = await fetch('/api/review', {
         method: 'POST',
@@ -54,7 +97,7 @@ const Page: React.FC = () => {
         },
         body: JSON.stringify({
           courseId: courseData._id,
-          studentName: session.user.firstName,
+          studentName: studentName || 'Anonymous',
           rating,
           review,
           userId: session.user.id,
@@ -75,20 +118,6 @@ const Page: React.FC = () => {
           title: 'Success',
           description: 'Your review has been submitted successfully.',
           type: 'default',
-        });
-        setTimeout(
-          () =>
-            setAlert({ show: false, title: '', description: '', type: null }),
-          5000
-        );
-        // Handle success, e.g., show a success message
-      } else {
-        // Handle error, e.g., show an error message
-        setAlert({
-          show: true,
-          title: 'Error',
-          description: 'Failed To Submit Review',
-          type: 'destructive',
         });
         setTimeout(
           () =>
@@ -172,6 +201,7 @@ const Page: React.FC = () => {
                 type="text"
                 value={studentName}
                 onChange={(e) => setStudentName(e.target.value)}
+                placeholder="Leave blank to remain anonymous..."
                 className="w-full p-2 mb-4 border hover:border-[#A49665] focus:border-[#A49665] rounded-lg outline-none"
               />
             </label>
@@ -183,11 +213,10 @@ const Page: React.FC = () => {
                 <svg
                   key={index}
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-6 w-6 cursor-pointer ${
-                    index < (rating || 0)
-                      ? 'fill-current text-yellow-500'
-                      : 'text-gray-400'
-                  }`}
+                  className={`h-8 w-8 cursor-pointer ${index < (rating || 0)
+                    ? 'fill-current text-yellow-500'
+                    : 'text-gray-400'
+                    }`}
                   viewBox="0 0 24 24"
                   onClick={() => handleStarClick(index)}
                 >
@@ -196,6 +225,7 @@ const Page: React.FC = () => {
                   <path d="M0 0h24v24H0z" fill="none" />
                 </svg>
               ))}
+
             </div>
           </div>
           <div>
@@ -204,6 +234,7 @@ const Page: React.FC = () => {
               <textarea
                 value={review}
                 onChange={(e) => setReview(e.target.value)}
+                placeholder="This course is...."
                 className="w-full p-2 mb-4 h-32 hover:border-[#A49665] focus:border-[#A49665] border rounded-lg outline-none"
               />
             </label>
