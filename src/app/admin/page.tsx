@@ -32,6 +32,7 @@ export default function AdminPage() {
       .then((response) => {
         if (response.ok) {
           alert('Course added successfully!');
+          window.location.reload()
         } else {
           alert('Failed to add course');
         }
@@ -49,13 +50,16 @@ export default function AdminPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(instructorData),
     })
-      .then((response) =>
-        response.ok
-          ? alert('Instructor added successfully!')
-          : Promise.reject('Failed to add instructor')
-      )
-      .catch((error) => console.error('Failed to add instructor:', error));
-  }
+    .then((response) => {
+      if (response.ok) {
+        alert('Instructor added successfully!');
+        window.location.reload(); // Reload the page to see the new instructor
+      } else {
+        alert('Failed to add instructor');
+      }
+    })
+    .catch((error) => console.error('Failed to add instructor:', error));
+}
 
   if (!isReady) {
     return <p>Loading...</p>;

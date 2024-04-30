@@ -69,6 +69,9 @@ const Navbar: React.FC = ({}) => {
             </button>
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-20">
+                {session?.user?.id === 'admin' && (
+                  <Link href="/admin" className="block px-4 py-2 text-sm capitalize text-gray-700 hover:bg-blue-500 hover:text-white"> Admin Panel </Link>)}
+
                 <Link href="/users/profile" className="block px-4 py-2 text-sm capitalize text-gray-700 hover:bg-blue-500 hover:text-white">
                   
                     Profile
