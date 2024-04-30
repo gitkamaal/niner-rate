@@ -4,27 +4,33 @@ import { useSession } from 'next-auth/react';
 import Navbar from '@/components/navbar';
 import SearchCourses from './searchCourse'; // Import the SearchCourses component
 
+type AlertVariant = 'default' | 'destructive';
+
 const Page: React.FC = () => {
+  // Always call useSession at the top, along with useState hooks
   const { data: session } = useSession();
 
-  // Guard clauses to handle different states of the session
-  if (!session) {
-    return <div>Session is not available</div>;
-  }
-
+  // Initialize all state variables at the top, unconditionally
   const [courseName, setCourseName] = useState('');
   const [studentName, setStudentName] = useState('');
   const [rating, setRating] = useState<number | null>(null);
   const [review, setReview] = useState('');
-  const [searchTerm, setSearchTerm] = useState(''); // State variable to track the search term
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Guard clause after all hooks
+  if (!session) {
+    return <div>Session is not available</div>;
+  }
 
   // Function to handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    // Implementation remains unchanged
     try {
       // Fetch the course by its name from the server
-      const courseResponse = await fetch(`/api/courseByName?code=${courseName}`);
+      const courseResponse = await fetch(
+        `/api/courseByName?code=${courseName}`
+      );
       const courseData = await courseResponse.json();
 
       if (!courseData._id) {
@@ -46,8 +52,6 @@ const Page: React.FC = () => {
           userId: session.user.id,
         }),
       });
-
-      console.log('User Session ID:', session.user.id)
 
       // Check if the response is successful
       if (response.ok) {
@@ -75,8 +79,6 @@ const Page: React.FC = () => {
 
   // Function to handle course search
   const handleCourseSearch = (selectedCourse: string) => {
-    // Call the searchCourses function with the entered value
-    console.log('Searching for course:', selectedCourse);
     setCourseName(selectedCourse); // Set the selected course name
     setSearchTerm(selectedCourse); // Update the search term
   };
@@ -84,7 +86,8 @@ const Page: React.FC = () => {
   return (
     <div>
       <Navbar />
-      <div className="flex justify-center items-center h-screen">
+
+      <div className="flex flex-col justify-center items-center min-h-screen">
         <form
           onSubmit={handleSubmit}
           className="border shadow-md rounded-lg px-5 py-5 bg-white"
@@ -98,7 +101,6 @@ const Page: React.FC = () => {
             <label>
               Course Name:
               <SearchCourses
-                className="w-full p-2 mb-4 hover:border-[#A49665] focus:border-[#A49665] border rounded-lg outline-none"
                 placeholder="Search for a course..."
                 searchCourses={handleCourseSearch}
                 searchTerm={searchTerm}
@@ -134,7 +136,7 @@ const Page: React.FC = () => {
                   xmlns="http://www.w3.org/2000/svg"
                   className={`h-6 w-6 cursor-pointer ${
                     index < (rating || 0)
-                      ? 'fill-current text-yellow-500' 
+                      ? 'fill-current text-yellow-500'
                       : 'text-gray-400'
                   }`}
                   viewBox="0 0 24 24"
@@ -167,5 +169,3 @@ const Page: React.FC = () => {
 };
 
 export default Page;
-
-
