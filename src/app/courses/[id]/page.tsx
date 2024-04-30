@@ -40,6 +40,7 @@ export default function CoursePage() {
   const [savedCourses, setSavedCourses] = useState<string[]>([]);
   const [isCourseSaved, setIsCourseSaved] = useState(false);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [showUpdateForm, setShowUpdateForm] = useState(false);
 
   const handleSaveOrDeleteCourse = async (courseCode, isSaved) => {
     try {
@@ -137,6 +138,7 @@ export default function CoursePage() {
               code: updatedData.code || '',
             });
           }
+          setShowUpdateForm(false);
         }
       })
       .catch((error) => console.error('Error updating course:', error));
@@ -179,24 +181,31 @@ export default function CoursePage() {
               </h2>
 
               {session && (
-                <button
-                  onClick={() =>
-                    handleSaveOrDeleteCourse(course.code, isCourseSaved)
-                  }
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#005035] hover:bg-[#003e2d] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+              <button onClick={() => handleSaveOrDeleteCourse(course.code, isCourseSaved)}
+              style={{ marginRight: '10px' }}
+              className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 ${isCourseSaved ? 'btn-delete hover:bg-b71c1c' : 'btn-save hover:bg-003e2d'}`}
                 >
-                  {isCourseSaved ? 'Delete Course' : 'Save Course'}
-                </button>
+              {isCourseSaved ? 'Delete Course' : 'Save Course'}
+              </button>
               )}
 
               {session?.user?.id === 'admin' && (
                 <button
                   onClick={handleDeleteCourse}
+                  style={{ marginRight: '10px' }}
                   className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
-                >
+                  >
                   Delete Course From DB
                 </button>
               )}
+
+              {session?.user?.id === 'admin' && (
+              <button onClick={() => setShowUpdateForm(!showUpdateForm)}
+                className={`btn ${showUpdateForm ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'} mb-4`}>
+              {showUpdateForm ? 'Cancel Edit' : 'Edit Course'}
+              </button>
+              )}
+
               <div className="flex items-center mb-2">
                 <span className="text-md font-medium  mr-1">
                   Course Rating:{' '}
@@ -222,16 +231,6 @@ export default function CoursePage() {
                 Based on <span className="font-bold">{reviews.length}</span>{' '}
                 reviews
               </div>
-
-              {session?.user?.id === 'admin' && (
-                <button
-                  onClick={handleDeleteCourse}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
-                >
-                  Delete Course From DB
-                </button>
-              )}
-
               <div className="mt-6 mb-6">
                 <NavigationMenu>
                   <NavigationMenuList>
@@ -320,42 +319,22 @@ export default function CoursePage() {
               )}
 
               {/* Display update form only for admin */}
-              {session?.user?.id === 'admin' && (
-                <form onSubmit={handleUpdateCourse}>
-                  <input
-                    defaultValue={course.code}
-                    name="code"
-                    placeholder="Course Code"
-                    required
-                  />
-                  <input
-                    defaultValue={course.title}
-                    name="title"
-                    placeholder="Title"
-                    required
-                  />
-                  <textarea
-                    defaultValue={course.courseDescription}
-                    name="courseDescription"
-                    placeholder="Course Description"
-                    required
-                  />
-                  <input
-                    defaultValue={course.unccCatalogID}
-                    name="unccCatalogID"
-                    placeholder="Catalog ID"
-                    required
-                  />
-                  <input
-                    defaultValue={course.unccCourseID}
-                    name="unccCourseID"
-                    placeholder="Course ID"
-                    required
-                  />
-                  <button type="submit" className="btn btn-primary">
-                    Update Course
-                  </button>
-                </form>
+              {showUpdateForm && (
+              <form onSubmit={handleUpdateCourse} className="mt-6">
+              <div className="space-y-4">
+              <input defaultValue={course.code} name="code" placeholder="Course Code" required className="input-field"/>
+
+              <input defaultValue={course.title} name="title" placeholder="Title" required className="input-field"/>
+
+              <textarea defaultValue={course.courseDescription} name="courseDescription" placeholder="Course Description" required className="input-field h-32"/>
+
+              <input defaultValue={course.unccCatalogID} name="unccCatalogID" placeholder="Catalog ID" required className="input-field"/>
+
+              <input defaultValue={course.unccCourseID} name="unccCourseID" placeholder="Course ID" required className="input-field"/>
+
+              <button type="submit" className="btn btn-primary"> Update Course </button>
+            </div>
+            </form>
               )}
             </div>
           </div>
