@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { useUser } from '../../contexts/UserContext';
 import { StarFilledIcon, StarIcon } from '@radix-ui/react-icons';
 import Pagination from '@/components/pagination';
+import ConfirmModal from '@/components/confirmModal';
 
 interface UserProfile {
   email: string;
@@ -44,6 +45,24 @@ const Profile = () => {
 
   const [courseTitle, setCourseTitle] = useState<{ [key: string]: string }>({});
   const [currentPage, setCurrentPage] = useState(1);
+
+  // state variables to manage the visibility of the confirmation modal and the course to delete
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState<string | null>(null);
+
+  // Functions to handle the confirmation modal actions: confirm and cancel
+  const handleConfirmDelete = () => {
+    if (courseToDelete) {
+      handleDeleteCourse(courseToDelete);
+    }
+    setShowConfirmModal(false);
+    setCourseToDelete(null);
+  };
+  
+  const handleCancelDelete = () => {
+    setShowConfirmModal(false);
+    setCourseToDelete(null);
+  };
 
   // Fetch course titles based on courseId
   const fetchCourseTitles = async () => {
@@ -358,17 +377,16 @@ const Profile = () => {
                         <p>{course.code}</p>
                       </div>
                       <div>
-                      <button
-                        onClick={() => window.location.href=`/courses/${course._id}`}
-                        className="btn text-[#005035] mr-4 bg-gray-500 hover:bg-gray-600 rounded-md px-4 py-2"
-                      >
-                        View
-                      </button>
+                        <button
+                          onClick={() => window.location.href=`/courses/${course._id}`}
+                          className="btn text-[#005035] mr-4 bg-gray-500 hover:bg-gray-600 rounded-md px-4 py-2"
+                        >
+                          View
+                        </button>                     
                         <button
                           onClick={() => {
-                            if (window.confirm('Are you sure you want to delete this course?')) {
-                              handleDeleteCourse(course.code);
-                            }
+                            setCourseToDelete(course.code);
+                            setShowConfirmModal(true);
                           }}
                           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
                         >
@@ -383,6 +401,13 @@ const Profile = () => {
           </div>
         </main>
       </div>
+      {showConfirmModal && (
+        <ConfirmModal
+          message={`Are you sure you want to delete "${courseToDelete}: ${savedCoursesDetails.find(course => course.code === courseToDelete)?.title}" from Saved Course?`} 
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
     </>
   );
 };
