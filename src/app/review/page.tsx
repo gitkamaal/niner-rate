@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Navbar from '@/components/navbar';
 import SearchCourses from './searchCourse'; // Import the SearchCourses component
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 type AlertVariant = 'default' | 'destructive';
 
@@ -16,6 +17,13 @@ const Page: React.FC = () => {
   const [rating, setRating] = useState<number | null>(null);
   const [review, setReview] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [resetTrigger, setResetTrigger] = useState(0);
+  const [alert, setAlert] = useState<{
+    show: boolean;
+    title: string;
+    description: string;
+    type: AlertVariant | null; // Use the AlertVariant type here
+  }>({ show: false, title: '', description: '', type: null });
 
   // Guard clause after all hooks
   if (!session) {
@@ -61,14 +69,44 @@ const Page: React.FC = () => {
         setRating(null);
         setReview('');
         setSearchTerm(''); // Reset the search term (not working currently)
-        console.log('submitted');
+        setResetTrigger((rt) => rt + 1);
+        setAlert({
+          show: true,
+          title: 'Success',
+          description: 'Your review has been submitted successfully.',
+          type: 'default',
+        });
+        setTimeout(
+          () =>
+            setAlert({ show: false, title: '', description: '', type: null }),
+          5000
+        );
         // Handle success, e.g., show a success message
       } else {
         // Handle error, e.g., show an error message
-        console.error('Failed to submit review:', response.statusText);
+        setAlert({
+          show: true,
+          title: 'Error',
+          description: 'Failed To Submit Review',
+          type: 'destructive',
+        });
+        setTimeout(
+          () =>
+            setAlert({ show: false, title: '', description: '', type: null }),
+          5000
+        );
       }
     } catch (error) {
-      console.error('Failed to submit review:', error);
+      setAlert({
+        show: true,
+        title: 'Error',
+        description: 'Failed To Submit Review',
+        type: 'destructive',
+      });
+      setTimeout(
+        () => setAlert({ show: false, title: '', description: '', type: null }),
+        5000
+      );
     }
   };
 
@@ -88,6 +126,16 @@ const Page: React.FC = () => {
       <Navbar />
 
       <div className="flex flex-col justify-center items-center min-h-screen">
+        {alert.show && (
+          <div className={`alert alert-${alert.type} max-w-md w-full mb-4`}>
+            <Alert variant={alert.type ?? 'default'}>
+              {' '}
+              {/* Use the non-null assertion here */}
+              <AlertTitle>{alert.title}</AlertTitle>
+              <AlertDescription>{alert.description}</AlertDescription>
+            </Alert>
+          </div>
+        )}
         <form
           onSubmit={handleSubmit}
           className="border shadow-md rounded-lg px-5 py-5 bg-white"
@@ -104,6 +152,7 @@ const Page: React.FC = () => {
                 placeholder="Search for a course..."
                 searchCourses={handleCourseSearch}
                 searchTerm={searchTerm}
+                resetTrigger={resetTrigger}
               />
             </label>
             <label style={{ display: 'none' }}>
