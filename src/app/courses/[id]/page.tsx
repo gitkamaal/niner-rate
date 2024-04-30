@@ -381,45 +381,70 @@ export default function CoursePage() {
               {showUpdateForm && (
                 <form onSubmit={handleUpdateCourse} className="mt-6">
                   <div className="space-y-4">
-                    <input
-                      defaultValue={course.code}
-                      name="code"
-                      placeholder="Course Code"
-                      required
-                      className="input-field"
-                    />
+                    <label>
+                      <strong>Course Code:</strong>
+                      <input
+                        defaultValue={course.code}
+                        name="code"
+                        placeholder="Course Code"
+                        required
+                        className="input-field"
+                      />
+                    </label>
 
-                    <input
-                      defaultValue={course.title}
-                      name="title"
-                      placeholder="Title"
-                      required
-                      className="input-field"
-                    />
+                    <br></br>
 
-                    <textarea
-                      defaultValue={course.courseDescription}
-                      name="courseDescription"
-                      placeholder="Course Description"
-                      required
-                      className="input-field h-32"
-                    />
+                    <label>
+                      <strong>Course Title:</strong>
+                      <input
+                        defaultValue={course.title}
+                        name="title"
+                        placeholder="Title"
+                        required
+                        className="input-field"
+                      />
+                    </label>
 
-                    <input
-                      defaultValue={course.unccCatalogID}
-                      name="unccCatalogID"
-                      placeholder="Catalog ID"
-                      required
-                      className="input-field"
-                    />
+                    <br></br>
 
-                    <input
-                      defaultValue={course.unccCourseID}
-                      name="unccCourseID"
-                      placeholder="Course ID"
-                      required
-                      className="input-field"
-                    />
+                    <label>
+                      <strong>Course Description:</strong>
+                      <textarea
+                        defaultValue={course.courseDescription}
+                        name="courseDescription"
+                        placeholder="Course Description"
+                        required
+                        className="input-field h-32"
+                      />
+                    </label>
+
+                    <br></br>
+
+                    <label>
+                      <strong>UNCC Catalog ID:</strong>
+                      <input
+                        defaultValue={course.unccCatalogID}
+                        name="unccCatalogID"
+                        placeholder="Catalog ID"
+                        required
+                        className="input-field"
+                      />
+                    </label>
+
+                    <br></br>
+
+                    <label>
+                      <strong>UNCC Course ID:</strong>
+                      <input
+                        defaultValue={course.unccCourseID}
+                        name="unccCourseID"
+                        placeholder="Course ID"
+                        required
+                        className="input-field"
+                      />
+                    </label>
+
+                    <br></br>
 
                     <button type="submit" className="btn btn-primary">
                       {' '}
