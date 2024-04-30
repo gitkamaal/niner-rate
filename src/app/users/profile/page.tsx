@@ -4,6 +4,8 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useUser } from '../../contexts/UserContext';
+import { StarFilledIcon, StarIcon } from '@radix-ui/react-icons';
+import Pagination from '@/components/pagination';
 
 interface UserProfile {
   email: string;
@@ -16,8 +18,10 @@ interface UserProfile {
 
 interface UserReview {
   host: string;
+  courseId: string;
   rating: number;
   review: string;
+  createdAt: string;
 }
 
 const Profile = () => {
@@ -37,6 +41,32 @@ const Profile = () => {
     firstName: '',
     lastName: '',
   });
+  const [courseTitle, setCourseTitle] = useState<{ [key: string]: string }>({});
+  const [currentPage, setCurrentPage] = useState(1);
+
+
+  // Fetch course titles based on courseId
+  const fetchCourseTitles = async () => {
+    try {
+      const response = await fetch(`/api/courses`);
+      if (!response.ok) {
+        console.error('Failed to fetch courses');
+        return;
+      }
+      const courses = await response.json();
+      const courseTitleMap = courses.reduce((acc, course) => {
+        acc[course._id] = course.title;
+        return acc;
+      }, {});
+      setCourseTitle(courseTitleMap);
+    } catch (error) {
+      console.error('Failed to fetch courses:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCourseTitles();
+  }, []);
 
   useEffect(() => {
     const fetchUserReviews = async () => {
@@ -132,19 +162,62 @@ const Profile = () => {
     setActiveTab(tab);
   };
 
+  const ITEMS_PER_PAGE = 12;
+
+  const totalPages = Math.ceil(userReviews.length / ITEMS_PER_PAGE);
+  const displayuserReviews = userReviews.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
   // Define the renderUserReviews function outside of the return statement
+  // Inside the renderUserReviews function
   const renderUserReviews = () => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const reviewsToDisplay = userReviews.slice(startIndex, endIndex);
+
     return (
       <div>
-        <h2>User Reviews</h2>
-        <div>
-          {userReviews.map((review) => (
-            <div key={review.host}>
-              <p>Rating: {review.rating}</p>
-              <p>Review: {review.review}</p>
+        <h2 className="text-xl font-semibold mb-4">User Reviews</h2>
+        <div className="space-y-4">
+          {reviewsToDisplay.map((review) => (
+            <div key={review.host} className="border border-gray-200 p-4 rounded-md">
+              <div className="flex items-center justify-between w-full">
+                <h3 className="text-lg font-semibold">{courseTitle[review.courseId]}</h3>
+                <p className="text-gray-600">Date: {new Date(review.createdAt).toLocaleDateString()}</p>
+              </div>
+              <div className="flex items-center">
+                <p className="text-md text-gray-600 mr-2">Rating:</p>
+                <span className="text-[25px] font-bold text-[#005035]">{review.rating}</span>
+                <span className="text-sm">/5</span>
+
+                <div className="flex ml-2 ">
+
+                  {[...Array(5)].map((_, i) =>
+                    i < review.rating ? (
+                      <StarFilledIcon
+                        key={i}
+                        className="w-5 h-5 text-[#A49665]"
+                      />
+                    ) : (
+                      <StarIcon
+                        key={i}
+                        className="w-4 h-4 text-[#A49665] mt-0.5"
+                      />
+                    )
+                  )}
+                </div>
+              </div>
+              <p className="text-md text-gray-500 mt-3 mb-2">{review.review}</p>
             </div>
           ))}
         </div>
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
       </div>
     );
   };
@@ -166,31 +239,28 @@ const Profile = () => {
           <ul className="flex space-x-6 border-b-2 mb-6">
             <li
               onClick={() => handleTabChange('profile')}
-              className={`cursor-pointer pb-2 ${
-                activeTab === 'profile'
-                  ? 'border-b-2 border-[#005035] font-medium'
-                  : 'font-medium hover:text-[#005035]'
-              }`}
+              className={`cursor-pointer pb-2 ${activeTab === 'profile'
+                ? 'border-b-2 border-[#005035] font-medium'
+                : 'font-medium hover:text-[#005035]'
+                }`}
             >
               Profile
             </li>
             <li
               onClick={() => handleTabChange('ratings')}
-              className={`cursor-pointer pb-2 ${
-                activeTab === 'ratings'
-                  ? 'border-b-2 border-[#005035] font-medium'
-                  : 'font-medium hover:text-[#005035]'
-              }`}
+              className={`cursor-pointer pb-2 ${activeTab === 'ratings'
+                ? 'border-b-2 border-[#005035] font-medium'
+                : 'font-medium hover:text-[#005035]'
+                }`}
             >
               Ratings
             </li>
             <li
               onClick={() => handleTabChange('savedCourses')}
-              className={`cursor-pointer pb-2 ${
-                activeTab === 'savedCourses'
-                  ? 'border-b-2 border-[#005035] font-medium'
-                  : 'font-medium hover:text-[#005035]'
-              }`}
+              className={`cursor-pointer pb-2 ${activeTab === 'savedCourses'
+                ? 'border-b-2 border-[#005035] font-medium'
+                : 'font-medium hover:text-[#005035]'
+                }`}
             >
               Saved Courses
             </li>
@@ -294,7 +364,7 @@ const Profile = () => {
                         </a>
                         <button
                           onClick={() => handleDeleteCourse(course.code)}
-                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#005035] hover:bg-[#003e2d] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
                         >
                           Delete Course
                         </button>

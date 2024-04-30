@@ -1,13 +1,14 @@
 import { getSession } from 'next-auth/react';
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../mongodb';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../config/auth-config';
 
 // Fetch a user's reviews from the 'reviews' collection
 export async function GET(req) {
   try {
     // Get the user session
-    const session = await getSession({ req });
-
+    const session = await getServerSession(authOptions);
     // If no session or user ID found, return an error
     if (!session || !session.user || !session.user.id) {
       console.error('No user session or user id found');
