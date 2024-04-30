@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import Navbar from '@/components/navbar';
 import { useSession } from 'next-auth/react';
+import Pagination from '@/components/pagination';
 
 import { StarFilledIcon, StarIcon } from '@radix-ui/react-icons';
 import {
@@ -40,7 +41,20 @@ export default function CoursePage() {
   const [savedCourses, setSavedCourses] = useState<string[]>([]);
   const [isCourseSaved, setIsCourseSaved] = useState(false);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [showUpdateForm, setShowUpdateForm] = useState(false);
+  const ITEMS_PER_PAGE = 12;
+
+  const totalPages = Math.ceil(reviews.length / ITEMS_PER_PAGE);
+  const displayReviews = reviews.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
 
   const handleSaveOrDeleteCourse = async (courseCode, isSaved) => {
     try {
@@ -270,9 +284,9 @@ export default function CoursePage() {
               )}
               {activeTab === 'reviews' && (
                 <div className="p-4">
-                  {reviews.map((review) => {
+                  {displayReviews.map((review) => {
                     const date = new Date(review.createdAt);
-                    const formattedDate = date.toLocaleDateString(); // Format the date
+                    const formattedDate = date.toLocaleDateString();
                     return (
                       <div
                         key={review._id}
@@ -289,34 +303,35 @@ export default function CoursePage() {
                                 i < review.rating ? (
                                   <StarFilledIcon
                                     key={i}
-                                    className="w-4 h-4 text-[#A49665]"
+                                    className="w-5 h-5 text-[#A49665]"
                                   />
                                 ) : (
-                                  <StarIcon
-                                    key={i}
-                                    className="w-4 h-4 text-[#A49665]"
-                                  />
+                                  <StarIcon key={i} className="w-4 h-4 text-[#A49665]" />
                                 )
                               )}
                             </div>
-                            <div>
+                              <div>
                               <span className="text-sm text-gray-500">
                                 {formattedDate}
                               </span>
                             </div>
                           </div>
                         </div>
-                        <span className="text-sm font-medium">
-                          {review.studentName}
-                        </span>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <span className="text-sm font-medium">{review.studentName}</span>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
                           {review.review}
                         </p>
                       </div>
                     );
                   })}
+                  <Pagination
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                  />
                 </div>
               )}
+              
 
               {/* Display update form only for admin */}
               {showUpdateForm && (

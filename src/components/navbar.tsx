@@ -48,10 +48,15 @@ const Navbar: React.FC = ({}) => {
           Instructors
         </Link>
         <span className="text-white">|</span>
-        <Link className="text-white px-4 hover:underline" href="/review">
-          Review
-        </Link>
-        <span className="text-white">|</span>
+        {/* render link if there is a session*/}
+        {session && (
+          <>
+            <Link className="text-white px-4 hover:underline" href="/review">
+              Review
+            </Link>
+            <span className="text-white">|</span>
+          </>
+        )}
         
         
         {session ? (
