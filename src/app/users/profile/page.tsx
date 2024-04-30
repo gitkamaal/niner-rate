@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { useUser } from '../../contexts/UserContext';
 import { StarFilledIcon, StarIcon } from '@radix-ui/react-icons';
 import Pagination from '@/components/pagination';
+import ConfirmModal from '@/components/confirmModal';
 
 interface UserProfile {
   email: string;
@@ -41,14 +42,32 @@ const Profile = () => {
     firstName: '',
     lastName: '',
   });
+
   const [courseTitle, setCourseTitle] = useState<{ [key: string]: string }>({});
   const [currentPage, setCurrentPage] = useState(1);
 
+  // state variables to manage the visibility of the confirmation modal and the course to delete
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState<string | null>(null);
+
+  // Functions to handle the confirmation modal actions: confirm and cancel
+  const handleConfirmDelete = () => {
+    if (courseToDelete) {
+      handleDeleteCourse(courseToDelete);
+    }
+    setShowConfirmModal(false);
+    setCourseToDelete(null);
+  };
+  
+  const handleCancelDelete = () => {
+    setShowConfirmModal(false);
+    setCourseToDelete(null);
+  };
 
   // Fetch course titles based on courseId
   const fetchCourseTitles = async () => {
     try {
-      const response = await fetch(`/api/courses`);
+      const response = await fetch('/api/courses');
       if (!response.ok) {
         console.error('Failed to fetch courses');
         return;
@@ -194,7 +213,7 @@ const Profile = () => {
 
                 <div className="flex ml-2 ">
 
-                  {[...Array(5)].map((_, i) =>
+                {[...Array(5)].map((_, i) =>
                     i < review.rating ? (
                       <StarFilledIcon
                         key={i}
@@ -284,7 +303,7 @@ const Profile = () => {
                           />
                           <button
                             onClick={() => handleSave('firstName')}
-                            className="ml-4 text-[#005035] hover:underline"
+                            className="btn ml-4 cursor-pointer text-[#005035] bg-green-500 hover:bg-green-600 rounded-md px-4 py-2"
                           >
                             Save
                           </button>
@@ -292,12 +311,12 @@ const Profile = () => {
                       ) : (
                         <>
                           <p>{localUserProfile.firstName}</p>
-                          <a
+                          <button
                             onClick={() => handleEditToggle('firstName')}
-                            className="ml-4 cursor-pointer text-[#005035] hover:underline"
+                            className="btn ml-4 cursor-pointer text-[#005035] bg-blue-500 hover:bg-blue-600 rounded-md px-4 py-2"
                           >
                             Edit
-                          </a>
+                          </button>
                         </>
                       )}
                     </div>
@@ -315,7 +334,7 @@ const Profile = () => {
                           />
                           <button
                             onClick={() => handleSave('lastName')}
-                            className="ml-4 text-[#005035] hover:underline"
+                            className="btn ml-4 cursor-pointer text-[#005035] bg-green-500 hover:bg-green-600 rounded-md px-4 py-2"
                           >
                             Save
                           </button>
@@ -323,12 +342,12 @@ const Profile = () => {
                       ) : (
                         <>
                           <p>{localUserProfile.lastName}</p>
-                          <a
+                          <button
                             onClick={() => handleEditToggle('lastName')}
-                            className="ml-4 cursor-pointer text-[#005035] hover:underline"
+                            className="btn ml-4 cursor-pointer text-[#005035] bg-blue-500 hover:bg-blue-600 rounded-md px-4 py-2"
                           >
                             Edit
-                          </a>
+                          </button>
                         </>
                       )}
                     </div>
@@ -356,14 +375,17 @@ const Profile = () => {
                         <p>{course.code}</p>
                       </div>
                       <div>
-                        <a
-                          href={`/courses/${course._id}`}
-                          className="text-[#005035] hover:underline mr-4"
+                        <button
+                          onClick={() => window.location.href=`/courses/${course._id}`}
+                          className="btn text-[#005035] mr-4 bg-gray-500 hover:bg-gray-600 rounded-md px-4 py-2"
                         >
                           View
-                        </a>
+                        </button>                     
                         <button
-                          onClick={() => handleDeleteCourse(course.code)}
+                          onClick={() => {
+                            setCourseToDelete(course.code);
+                            setShowConfirmModal(true);
+                          }}
                           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
                         >
                           Delete Course
@@ -377,6 +399,13 @@ const Profile = () => {
           </div>
         </main>
       </div>
+      {showConfirmModal && (
+        <ConfirmModal
+          message={`Are you sure you want to delete "${courseToDelete}: ${savedCoursesDetails.find(course => course.code === courseToDelete)?.title}" from Saved Course?`} 
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
     </>
   );
 };

@@ -3,28 +3,42 @@ import React, { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Navbar from '@/components/navbar';
 import SearchCourses from './searchCourse'; // Import the SearchCourses component
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
+type AlertVariant = 'default' | 'destructive';
 
 const Page: React.FC = () => {
+  // Always call useSession at the top, along with useState hooks
   const { data: session } = useSession();
 
-  // Guard clauses to handle different states of the session
-  if (!session) {
-    return <div>Session is not available</div>;
-  }
-
+  // Initialize all state variables at the top, unconditionally
   const [courseName, setCourseName] = useState('');
   const [studentName, setStudentName] = useState('');
   const [rating, setRating] = useState<number | null>(null);
   const [review, setReview] = useState('');
-  const [searchTerm, setSearchTerm] = useState(''); // State variable to track the search term
+  const [searchTerm, setSearchTerm] = useState('');
+  const [resetTrigger, setResetTrigger] = useState(0);
+  const [alert, setAlert] = useState<{
+    show: boolean;
+    title: string;
+    description: string;
+    type: AlertVariant | null; // Use the AlertVariant type here
+  }>({ show: false, title: '', description: '', type: null });
+
+  // Guard clause after all hooks
+  if (!session) {
+    return <div>Session is not available</div>;
+  }
 
   // Function to handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    // Implementation remains unchanged
     try {
       // Fetch the course by its name from the server
-      const courseResponse = await fetch(`/api/courseByName?code=${courseName}`);
+      const courseResponse = await fetch(
+        `/api/courseByName?code=${courseName}`
+      );
       const courseData = await courseResponse.json();
 
       if (!courseData._id) {
@@ -47,8 +61,6 @@ const Page: React.FC = () => {
         }),
       });
 
-      console.log('User Session ID:', session.user.id)
-
       // Check if the response is successful
       if (response.ok) {
         // Reset form fields on successful submission
@@ -57,14 +69,44 @@ const Page: React.FC = () => {
         setRating(null);
         setReview('');
         setSearchTerm(''); // Reset the search term (not working currently)
-        console.log('submitted');
+        setResetTrigger((rt) => rt + 1);
+        setAlert({
+          show: true,
+          title: 'Success',
+          description: 'Your review has been submitted successfully.',
+          type: 'default',
+        });
+        setTimeout(
+          () =>
+            setAlert({ show: false, title: '', description: '', type: null }),
+          5000
+        );
         // Handle success, e.g., show a success message
       } else {
         // Handle error, e.g., show an error message
-        console.error('Failed to submit review:', response.statusText);
+        setAlert({
+          show: true,
+          title: 'Error',
+          description: 'Failed To Submit Review',
+          type: 'destructive',
+        });
+        setTimeout(
+          () =>
+            setAlert({ show: false, title: '', description: '', type: null }),
+          5000
+        );
       }
     } catch (error) {
-      console.error('Failed to submit review:', error);
+      setAlert({
+        show: true,
+        title: 'Error',
+        description: 'Failed To Submit Review',
+        type: 'destructive',
+      });
+      setTimeout(
+        () => setAlert({ show: false, title: '', description: '', type: null }),
+        5000
+      );
     }
   };
 
@@ -75,8 +117,6 @@ const Page: React.FC = () => {
 
   // Function to handle course search
   const handleCourseSearch = (selectedCourse: string) => {
-    // Call the searchCourses function with the entered value
-    console.log('Searching for course:', selectedCourse);
     setCourseName(selectedCourse); // Set the selected course name
     setSearchTerm(selectedCourse); // Update the search term
   };
@@ -84,7 +124,18 @@ const Page: React.FC = () => {
   return (
     <div>
       <Navbar />
-      <div className="flex justify-center items-center h-screen">
+
+      <div className="flex flex-col justify-center items-center min-h-screen">
+        {alert.show && (
+          <div className={`alert alert-${alert.type} max-w-md w-full mb-4`}>
+            <Alert variant={alert.type ?? 'default'}>
+              {' '}
+              {/* Use the non-null assertion here */}
+              <AlertTitle>{alert.title}</AlertTitle>
+              <AlertDescription>{alert.description}</AlertDescription>
+            </Alert>
+          </div>
+        )}
         <form
           onSubmit={handleSubmit}
           className="border shadow-md rounded-lg px-5 py-5 bg-white"
@@ -98,10 +149,10 @@ const Page: React.FC = () => {
             <label>
               Course Name:
               <SearchCourses
-                className="w-full p-2 mb-4 hover:border-[#A49665] focus:border-[#A49665] border rounded-lg outline-none"
                 placeholder="Search for a course..."
                 searchCourses={handleCourseSearch}
                 searchTerm={searchTerm}
+                resetTrigger={resetTrigger}
               />
             </label>
             <label style={{ display: 'none' }}>
@@ -134,7 +185,7 @@ const Page: React.FC = () => {
                   xmlns="http://www.w3.org/2000/svg"
                   className={`h-6 w-6 cursor-pointer ${
                     index < (rating || 0)
-                      ? 'fill-current text-yellow-500' 
+                      ? 'fill-current text-yellow-500'
                       : 'text-gray-400'
                   }`}
                   viewBox="0 0 24 24"
@@ -167,5 +218,3 @@ const Page: React.FC = () => {
 };
 
 export default Page;
-
-

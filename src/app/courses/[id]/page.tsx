@@ -5,6 +5,8 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import Navbar from '@/components/navbar';
 import { useSession } from 'next-auth/react';
 import Pagination from '@/components/pagination';
+import ConfirmModal from '@/components/confirmModal';
+
 import { StarFilledIcon, StarIcon } from '@radix-ui/react-icons';
 import {
   NavigationMenu,
@@ -42,18 +44,35 @@ export default function CoursePage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showUpdateForm, setShowUpdateForm] = useState(false);
+  const ITEMS_PER_PAGE = 5;
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  const ITEMS_PER_PAGE = 12;
+  // Variables to manage the visibility of the modal and the course to delete
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState<string | null>(null);
 
   const totalPages = Math.ceil(reviews.length / ITEMS_PER_PAGE);
   const displayReviews = reviews.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Functions to handle the confirmation modal actions: confirm and cancel
+  const handleConfirmDelete = () => {
+    if (courseToDelete) {
+      handleDeleteCourse(courseToDelete);
+    }
+    setShowConfirmModal(false);
+    setCourseToDelete(null);
+  };
+
+  const handleCancelDelete = () => {
+    setShowConfirmModal(false);
+    setCourseToDelete(null);
+  };
 
   const handleSaveOrDeleteCourse = async (courseCode, isSaved) => {
     try {
@@ -158,8 +177,7 @@ export default function CoursePage() {
   };
 
   // delete course by id
-  const handleDeleteCourse = async () => {
-    const courseId = pathname.split('/')[2];
+  const handleDeleteCourse = async (courseId) => {
     try {
       const response = await fetch(`/api/courses/${courseId}`, {
         method: 'DELETE',
@@ -195,9 +213,22 @@ export default function CoursePage() {
 
               {session && (
                 <button
-                  onClick={() => handleSaveOrDeleteCourse(course.code, isCourseSaved)}
+                  onClick={() => {
+                    if (
+                      !isCourseSaved ||
+                      window.confirm(
+                        'Are you sure you want to delete this course from your Saved Courses?'
+                      )
+                    ) {
+                      handleSaveOrDeleteCourse(course.code, isCourseSaved);
+                    }
+                  }}
                   style={{ marginRight: '10px' }}
-                  className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 ${isCourseSaved ? 'btn-delete hover:bg-b71c1c' : 'btn-save hover:bg-003e2d'}`}
+                  className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 ${
+                    isCourseSaved
+                      ? 'btn-delete hover:bg-b71c1c'
+                      : 'btn-save hover:bg-003e2d'
+                  }`}
                 >
                   {isCourseSaved ? 'Delete Course' : 'Save Course'}
                 </button>
@@ -206,7 +237,10 @@ export default function CoursePage() {
 
               {session?.user?.id === 'admin' && (
                 <button
-                  onClick={handleDeleteCourse}
+                  onClick={() => {
+                    setCourseToDelete(course._id); // Set the course ID to delete
+                    setShowConfirmModal(true); // Show the confirmation modal
+                  }}
                   style={{ marginRight: '10px' }}
                   className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
                 >
@@ -217,7 +251,11 @@ export default function CoursePage() {
               {session?.user?.id === 'admin' && (
                 <button
                   onClick={() => setShowUpdateForm(!showUpdateForm)}
-                  className={`btn ${showUpdateForm ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'} mb-4`}
+                  className={`btn ${
+                    showUpdateForm
+                      ? 'bg-red-500 hover:bg-red-600'
+                      : 'bg-blue-500 hover:bg-blue-600'
+                  } mb-4`}
                 >
                   {showUpdateForm ? 'Cancel Edit' : 'Edit Course'}
                 </button>
@@ -318,7 +356,9 @@ export default function CoursePage() {
                             </div>
                           </div>
                         </div>
-                        <span className="text-sm font-medium">{review.studentName}</span>
+                        <span className="text-sm font-medium">
+                          {review.studentName}
+                        </span>
                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
                           {review.review}
                         </p>
@@ -337,24 +377,66 @@ export default function CoursePage() {
               {showUpdateForm && (
                 <form onSubmit={handleUpdateCourse} className="mt-6">
                   <div className="space-y-4">
-                    <input defaultValue={course.code} name="code" placeholder="Course Code" required className="input-field" />
+                    <input
+                      defaultValue={course.code}
+                      name="code"
+                      placeholder="Course Code"
+                      required
+                      className="input-field"
+                    />
 
-                    <input defaultValue={course.title} name="title" placeholder="Title" required className="input-field" />
+                    <input
+                      defaultValue={course.title}
+                      name="title"
+                      placeholder="Title"
+                      required
+                      className="input-field"
+                    />
 
-                    <textarea defaultValue={course.courseDescription} name="courseDescription" placeholder="Course Description" required className="input-field h-32" />
+                    <textarea
+                      defaultValue={course.courseDescription}
+                      name="courseDescription"
+                      placeholder="Course Description"
+                      required
+                      className="input-field h-32"
+                    />
 
-                    <input defaultValue={course.unccCatalogID} name="unccCatalogID" placeholder="Catalog ID" required className="input-field" />
+                    <input
+                      defaultValue={course.unccCatalogID}
+                      name="unccCatalogID"
+                      placeholder="Catalog ID"
+                      required
+                      className="input-field"
+                    />
 
-                    <input defaultValue={course.unccCourseID} name="unccCourseID" placeholder="Course ID" required className="input-field" />
+                    <input
+                      defaultValue={course.unccCourseID}
+                      name="unccCourseID"
+                      placeholder="Course ID"
+                      required
+                      className="input-field"
+                    />
 
-                    <button type="submit" className="btn btn-primary"> Update Course </button>
+                    <button type="submit" className="btn btn-primary">
+                      {' '}
+                      Update Course{' '}
+                    </button>
                   </div>
                 </form>
               )}
             </div>
           </div>
-        </main >
-      </div >
+        </main>
+      </div>
+      {showConfirmModal && (
+        <ConfirmModal
+          message={`Are you sure you want to delete "${
+            course.code + ': ' + course.title
+          }" from the data base?`}
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
     </>
   );
 }
