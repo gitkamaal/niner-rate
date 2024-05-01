@@ -47,40 +47,71 @@ const LikeButton = ({ reviewId }) => {
   }, [reviewId]);
 
   const handleReactionClick = async (reaction) => {
-    if (activeBtn === reaction) {
-      // Toggle reaction off if clicking the same button again
-      updateReactionState('', likeCount, dislikeCount);
-      return;
-    }
-
-    // Calculate new counts
-    const newLikeCount = reaction === 'like' ? likeCount + 1 : likeCount;
-    const newDislikeCount =
-      reaction === 'dislike' ? dislikeCount + 1 : dislikeCount;
-
-    try {
-      const response = await fetch('/api/LikeButton', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          reviewId,
-          likeCount: newLikeCount,
-          dislikeCount: newDislikeCount,
-          userReaction: reaction,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save reaction');
+    // Check if the current button click is different from the last active button
+    if (activeBtn && activeBtn !== reaction) {
+      // Calculate adjusted counts for toggling reactions
+      let adjustment = activeBtn === 'like' ? -1 : 1; // If previously liked, we subtract one; if disliked, we add one.
+      const newLikeCount = reaction === 'like' ? likeCount + 1 : likeCount + adjustment;
+      const newDislikeCount = reaction === 'dislike' ? dislikeCount + 1 : dislikeCount - adjustment;
+  
+      try {
+        const response = await fetch('/api/LikeButton', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            reviewId,
+            likeCount: newLikeCount,
+            dislikeCount: newDislikeCount,
+            userReaction: reaction,
+          }),
+        });
+  
+        if (!response.ok) {
+          throw new Error('Failed to save reaction');
+        }
+  
+        // Update the local state and local storage
+        updateReactionState(reaction, newLikeCount, newDislikeCount);
+      } catch (error) {
+        console.error('Error:', error);
+        // Optionally, revert changes if the request fails
       }
-
-      // Update the local state and local storage
-      updateReactionState(reaction, newLikeCount, newDislikeCount);
-    } catch (error) {
-      console.error('Error:', error);
-      // Optionally, revert changes if the request fails
+    } else if (activeBtn === reaction) {
+      // If the active button is clicked again, toggle it off
+      const adjustment = reaction === 'like' ? -1 : 1;
+      const newLikeCount = reaction === 'like' ? likeCount - 1 : likeCount;
+      const newDislikeCount = reaction === 'dislike' ? dislikeCount - 1 : dislikeCount;
+      updateReactionState('', newLikeCount, newDislikeCount);
+    } else {
+      // Handle first-time click
+      const newLikeCount = reaction === 'like' ? likeCount + 1 : likeCount;
+      const newDislikeCount = reaction === 'dislike' ? dislikeCount + 1 : dislikeCount;
+  
+      try {
+        const response = await fetch('/api/LikeButton', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            reviewId,
+            likeCount: newLikeCount,
+            dislikeCount: newDislikeCount,
+            userReaction: reaction,
+          }),
+        });
+  
+        if (!response.ok) {
+          throw new Error('Failed to save reaction');
+        }
+  
+        // Update the local state and local storage
+        updateReactionState(reaction, newLikeCount, newDislikeCount);
+      } catch (error) {
+        console.error('Error:', error);
+        // Optionally, revert changes if the request fails
+      }
     }
   };
+  
 
   if (!session) {
     return <div>Session is not available</div>;
