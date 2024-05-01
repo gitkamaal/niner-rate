@@ -387,8 +387,7 @@ const Profile = () => {
                       className="flex items-center justify-between border-b-2 py-2"
                     >
                       <div>
-                        <h3>{course.title}</h3>
-                        <p>{course.code}</p>
+                        <h3>{course.code}: {course.title}</h3>
                       </div>
                       <div>
                         <button
