@@ -48,7 +48,7 @@ const Page: React.FC = () => {
         return;
       }
 
-      // prompt user if require field is missing
+      // prompt user if course name field is empty
       if (!courseName.trim()) {
         setAlert({
           show: true,
@@ -62,7 +62,21 @@ const Page: React.FC = () => {
         );
         return;
       }
-      // prompt user if require field is missing
+      // prompt user if instructor name field is empty
+      if (!instructorName.trim()) {
+        setAlert({
+          show: true,
+          title: 'Error',
+          description: 'Please provide a instructor name.',
+          type: 'destructive',
+        });
+        setTimeout(
+          () => setAlert({ show: false, title: '', description: '', type: null }),
+          5000
+        );
+        return;
+      }
+      // prompt user if rating field is empty
       if (!rating || rating === 0) {
         setAlert({
           show: true,
@@ -76,7 +90,7 @@ const Page: React.FC = () => {
         );
         return;
       }
-      // prompt user if require field is missing
+      // prompt user if review field is empty
       if (!review.trim()) {
         setAlert({
           show: true,
@@ -255,7 +269,7 @@ const Page: React.FC = () => {
               <textarea
                 value={review}
                 onChange={(e) => setReview(e.target.value)}
-                placeholder="This course is...."
+                placeholder="Leave a review..."
                 className="w-full p-2 mb-4 h-32 hover:border-[#A49665] focus:border-[#A49665] border rounded-lg outline-none"
               />
             </label>

@@ -198,7 +198,7 @@ const Profile = () => {
 
     return (
       <div>
-        <h2 className="text-xl font-semibold mb-4">User Reviews</h2>
+        <h2 className="text-xl font-semibold mb-4">User Reviews:</h2>
         <div className="space-y-4">
           {reviewsToDisplay.map((review) => (
             <div
@@ -379,7 +379,7 @@ const Profile = () => {
 
             {activeTab === 'savedCourses' && (
               <div>
-                <h2>Saved Courses</h2>
+                <h2 className="text-xl font-semibold mb-4">Saved Courses:</h2>
                 <div>
                   {savedCoursesDetails.map((course) => (
                     <div
@@ -387,8 +387,7 @@ const Profile = () => {
                       className="flex items-center justify-between border-b-2 py-2"
                     >
                       <div>
-                        <h3>{course.title}</h3>
-                        <p>{course.code}</p>
+                        <h3>{course.code}: {course.title}</h3>
                       </div>
                       <div>
                         <button
