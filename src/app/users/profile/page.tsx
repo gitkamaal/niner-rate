@@ -379,7 +379,7 @@ const Profile = () => {
 
             {activeTab === 'savedCourses' && (
               <div>
-                <h2>Saved Courses</h2>
+                <h2 className="text-xl font-semibold mb-4">Saved Courses:</h2>
                 <div>
                   {savedCoursesDetails.map((course) => (
                     <div
