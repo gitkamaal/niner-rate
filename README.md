@@ -119,11 +119,13 @@ In Sprint 2, our team proudly presents a functioning prototype of our applicatio
 
 [![Sprint 2: Working Prototype Video](https://img.youtube.com/vi/XK9iuYExhoY/0.jpg)](https://www.youtube.com/watch?v=XK9iuYExhoY)
 
-#### Sprint 3: Working Web Application Video:
+#### Sprint 3: Working Web Application Deployed on AWS Amplify Video:
 
-While Sprint 3 marks our final demo milestone, our journey towards completing the project is still ongoing with several more weeks ahead. In this preview video, we offer a glimpse into the current state of our web application, showcasing the latest features and refinements implemented during this sprint. Stay tuned as we continue to iterate and enhance our application towards its final release.
+With the complete, fully functional Niner Rate web application deployed on AWS Amplify, we've achieved a significant milestone in our development journey. This deployment represents the culmination of our efforts, integrating all the refined features and functionalities developed throughout the sprint cycle. Now accessible to users, Niner Rate offers intuitive search capabilities, comprehensive instructor profiles, interactive course reviews, streamlined user authentication, and continuous database updates. The live platform on AWS Amplify provides UNCC students with a seamless and informative tool to navigate their academic journey confidently. As we celebrate this achievement, our commitment to enhancing Niner Rate and delivering an unparalleled user experience remains steadfast. Check out the video below for a demonstration of our app in action.
 
-[![Sprint 3L Working Web Application Video](https://img.youtube.com/vi/XK9iuExhoY/0.jpg)](https://www.youtube.com/watch?v=X9iuYExhoY)
+Discover the enhanced features of Niner Rate, designed to empower UNCC students in their academic journey. Our intuitive search bar enables effortless course exploration tailored to individual interests, while comprehensive instructor profiles provide valuable insights into educators. Seamlessly integrated with RateMyProfessor, users can access reviews to inform their decisions and contribute feedback. The ability to save courses, view ratings, and access detailed descriptions ensures a personalized and informed experience. With continuous updates to both the professors and course lists, Niner Rate maintains accuracy and relevance. Features such as UNCC Credentials login, anonymous browsing, and a personalized profile page further enhance usability and security. From browsing courses to creating and interacting with reviews, Niner Rate offers a comprehensive platform to streamline the academic journey for UNCC students.
+
+[![Sprint 3: Working Web Application Video](https://img.youtube.com/vi/g5yFGRFXy3I/0.jpg)](https://www.youtube.com/watch?v=g5yFGRFXy3I)
 
 ## Project Pitch
 
