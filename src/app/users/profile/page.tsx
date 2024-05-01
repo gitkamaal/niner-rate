@@ -154,7 +154,7 @@ const Profile = () => {
         throw new Error(result.message || 'Failed to delete course');
       }
 
-      console.log('Updated saved courses:', result);
+    
       fetchSavedCourses();
     } catch (error) {
       console.error('Error deleting course:', error);

@@ -110,7 +110,7 @@ export default function CoursePage() {
         const response = await fetch(`/api/courses/${courseId}`);
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
-        console.log(data); // Log the data
+        
         setCourse(data.course);
         setReviews(data.reviews);
       } catch (error) {

@@ -2,104 +2,83 @@ import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { AiOutlineLike, AiOutlineDislike } from 'react-icons/ai';
 
-interface Reaction {
-  id;
-  reviewId;
-  likeCount;
-  dislikeCount;
-}
-
-const LikeButton: React.FC<{ reviewId: string }> = ({ reviewId }) => {
+const LikeButton = ({ reviewId }) => {
   const { data: session } = useSession();
-  const [courseName, setCourseName] = useState<string>('');
-  const [likeCount, setLikeCount] = useState<number>(0);
-  const [dislikeCount, setDislikeCount] = useState<number>(0);
-  const [activeBtn, setActiveBtn] = useState<string>('');
-  const [currentReactionId, setCurrentReactionId] = useState<number>(0);
-  useEffect(() => {
-    // Fetch like and dislike counts for the course when component mounts
-    fetchLikeDislikeCounts();
-  }, []);
+  const [likeCount, setLikeCount] = useState(0);
+  const [dislikeCount, setDislikeCount] = useState(0);
+  const [activeBtn, setActiveBtn] = useState('');
 
-  const fetchLikeDislikeCounts = async () => {
-    try {
-      // Fetch like and dislike counts for the course from the server
-      const courseResponse = await fetch(
-        `/api/LikeButton?reviewId=${reviewId}`
-      );
-      const courseData = await courseResponse.json();
-      console.log(courseData?._id);
-      if (courseData?._id != null) setCurrentReactionId(courseData._id);
-      // Update like and dislike counts in the component state
-      if (courseData) {
-        setLikeCount(courseData.likeCount || 0);
-        setDislikeCount(courseData.dislikeCount || 0);
-      }
-    } catch (error) {
-      console.error('Error fetching like and dislike counts:', error);
-    }
+  // Helper to update local storage and state
+  const updateReactionState = (newActiveBtn, likes, dislikes) => {
+    setActiveBtn(newActiveBtn);
+    setLikeCount(likes);
+    setDislikeCount(dislikes);
+    localStorage.setItem(
+      `reaction_${reviewId}`,
+      JSON.stringify({
+        activeBtn: newActiveBtn,
+        likeCount: likes,
+        dislikeCount: dislikes,
+      })
+    );
   };
 
-  const handleReactionClick = async (reaction: string): Promise<void> => {
+  useEffect(() => {
+    // Fetch initial counts and set up local state based on local storage
+    const reactionData = localStorage.getItem(`reaction_${reviewId}`);
+    const savedData = reactionData ? JSON.parse(reactionData) : null;
+
+    const fetchLikeDislikeCounts = async () => {
+      try {
+        const response = await fetch(`/api/LikeButton?reviewId=${reviewId}`);
+        const data = await response.json();
+        if (data) {
+          const initialLikes = data.likeCount || 0;
+          const initialDislikes = data.dislikeCount || 0;
+          const initialActiveBtn = savedData ? savedData.activeBtn : '';
+          updateReactionState(initialActiveBtn, initialLikes, initialDislikes);
+        }
+      } catch (error) {
+        console.error('Error fetching like and dislike counts:', error);
+      }
+    };
+
+    fetchLikeDislikeCounts();
+  }, [reviewId]);
+
+  const handleReactionClick = async (reaction) => {
     if (activeBtn === reaction) {
-      console.log('Reaction already applied.');
-      return; // Prevent further action if already liked or disliked
+      // Toggle reaction off if clicking the same button again
+      updateReactionState('', likeCount, dislikeCount);
+      return;
     }
 
+    // Calculate new counts
+    const newLikeCount = reaction === 'like' ? likeCount + 1 : likeCount;
+    const newDislikeCount =
+      reaction === 'dislike' ? dislikeCount + 1 : dislikeCount;
+
     try {
-      let newLikeCount = likeCount;
-      let newDislikeCount = dislikeCount;
-
-      // Update counts based on the reaction and previous button state
-      if (reaction === 'like') {
-        if (activeBtn !== 'like') {
-          newLikeCount += 1;
-          if (activeBtn === 'dislike') {
-            newDislikeCount -= 1;
-          }
-        }
-      } else {
-        // reaction === 'dislike'
-        if (activeBtn !== 'dislike') {
-          newDislikeCount += 1;
-          if (activeBtn === 'like') {
-            newLikeCount -= 1;
-          }
-        }
-      }
-
-      // Set the updated counts to state
-      setLikeCount(newLikeCount);
-      setDislikeCount(newDislikeCount);
-
-      let currentId = currentReactionId;
-      let req = {
-        currentId,
-        reviewId,
-        likeCount: newLikeCount,
-        dislikeCount: newDislikeCount,
-      };
       const response = await fetch('/api/LikeButton', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(req),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reviewId,
+          likeCount: newLikeCount,
+          dislikeCount: newDislikeCount,
+          userReaction: reaction,
+        }),
       });
 
       if (!response.ok) {
         throw new Error('Failed to save reaction');
       }
 
-      // Toggle active button
-      setActiveBtn((prevActiveBtn) =>
-        prevActiveBtn === reaction ? '' : reaction
-      );
+      // Update the local state and local storage
+      updateReactionState(reaction, newLikeCount, newDislikeCount);
     } catch (error) {
       console.error('Error:', error);
-      // Optionally reset to previous counts if error
-      setLikeCount(likeCount);
-      setDislikeCount(dislikeCount);
+      // Optionally, revert changes if the request fails
     }
   };
 
@@ -109,15 +88,12 @@ const LikeButton: React.FC<{ reviewId: string }> = ({ reviewId }) => {
 
   return (
     <div>
-      {/* Button for liking */}
       <button
         className={`inactive-btn ${activeBtn === 'like' ? 'like-active' : ''}`}
         onClick={() => handleReactionClick('like')}
       >
         <AiOutlineLike /> {likeCount}
       </button>
-
-      {/* Button for disliking */}
       <button
         className={`inactive-btn ${
           activeBtn === 'dislike' ? 'dislike-active' : ''
