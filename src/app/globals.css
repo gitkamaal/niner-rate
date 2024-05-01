@@ -127,3 +127,20 @@
 .btn-delete:hover {
   background-color: #b71c1c; /* Darker Red */
 }
+
+.inactive-btn {
+  display: inline-block;
+  padding: 0.5rem .5rem;
+  color: black;
+  border: none;
+  border-radius: 0.300rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.like-active {
+  color:forestgreen; 
+}
+
+.dislike-active {
+  color: #d32f2f;
+}
