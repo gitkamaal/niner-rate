@@ -198,7 +198,7 @@ const Profile = () => {
 
     return (
       <div>
-        <h2 className="text-xl font-semibold mb-4">User Reviews</h2>
+        <h2 className="text-xl font-semibold mb-4">User Reviews:</h2>
         <div className="space-y-4">
           {reviewsToDisplay.map((review) => (
             <div
