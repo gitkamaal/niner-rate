@@ -180,6 +180,15 @@ export default function CoursePage() {
   // delete course by id
   const handleDeleteCourse = async (courseId) => {
     try {
+
+      const deleteReviewsResponse = await fetch(`/api/review/${courseId}`, {
+        method: 'DELETE',
+      });
+      if (!deleteReviewsResponse.ok) {
+        throw new Error('Failed to delete reviews');
+      }
+
+
       const response = await fetch(`/api/courses/${courseId}`, {
         method: 'DELETE',
       });
