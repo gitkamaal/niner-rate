@@ -23,6 +23,7 @@ interface UserReview {
   rating: number;
   review: string;
   createdAt: string;
+  instructorName: string;
 }
 
 const Profile = () => {
@@ -58,7 +59,7 @@ const Profile = () => {
     setShowConfirmModal(false);
     setCourseToDelete(null);
   };
-  
+
   const handleCancelDelete = () => {
     setShowConfirmModal(false);
     setCourseToDelete(null);
@@ -200,19 +201,27 @@ const Profile = () => {
         <h2 className="text-xl font-semibold mb-4">User Reviews</h2>
         <div className="space-y-4">
           {reviewsToDisplay.map((review) => (
-            <div key={review.host} className="border border-gray-200 p-4 rounded-md">
+            <div
+              key={review.host}
+              className="border border-gray-200 p-4 rounded-md"
+            >
               <div className="flex items-center justify-between w-full">
-                <h3 className="text-lg font-semibold">{courseTitle[review.courseId]}</h3>
-                <p className="text-gray-600">Date: {new Date(review.createdAt).toLocaleDateString()}</p>
+                <h3 className="text-lg font-semibold">
+                  {courseTitle[review.courseId]}
+                </h3>
+                <p className="text-gray-600">
+                  Date: {new Date(review.createdAt).toLocaleDateString()}
+                </p>
               </div>
               <div className="flex items-center">
                 <p className="text-md text-gray-600 mr-2">Rating:</p>
-                <span className="text-[25px] font-bold text-[#005035]">{review.rating}</span>
+                <span className="text-[25px] font-bold text-[#005035]">
+                  {review.rating}
+                </span>
                 <span className="text-sm">/5</span>
 
                 <div className="flex ml-2 ">
-
-                {[...Array(5)].map((_, i) =>
+                  {[...Array(5)].map((_, i) =>
                     i < review.rating ? (
                       <StarFilledIcon
                         key={i}
@@ -224,6 +233,11 @@ const Profile = () => {
                         className="w-4 h-4 text-[#A49665] mt-0.5"
                       />
                     )
+                  )}
+                  {review.instructorName && (
+                    <span className=" mx-7 text-sm  text-gray-500">
+                      Professor: {review.instructorName}
+                    </span>
                   )}
                 </div>
               </div>
@@ -291,7 +305,7 @@ const Profile = () => {
             {activeTab === 'profile' && (
               <div>
                 {session && userProfile ? (
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <h2 className="text-xl font-semibold">First Name</h2>
                     <div className="flex justify-between items-end">
                       {editMode.firstName ? (
@@ -323,7 +337,7 @@ const Profile = () => {
                       )}
                     </div>
 
-                    <h2 className="text-xl font-semibold">Last Name</h2>
+                    <h2 className="pt-4 text-xl font-semibold">Last Name</h2>
                     <div className="flex justify-between items-end">
                       {editMode.lastName ? (
                         <>
@@ -378,11 +392,13 @@ const Profile = () => {
                       </div>
                       <div>
                         <button
-                          onClick={() => window.location.href=`/courses/${course._id}`}
+                          onClick={() =>
+                            (window.location.href = `/courses/${course._id}`)
+                          }
                           className="btn text-[#005035] mr-4 bg-gray-500 hover:bg-gray-600 rounded-md px-4 py-2"
                         >
                           View
-                        </button>                     
+                        </button>
                         <button
                           onClick={() => {
                             setCourseToDelete(course.code);
@@ -403,7 +419,10 @@ const Profile = () => {
       </div>
       {showConfirmModal && (
         <ConfirmModal
-          message={`Are you sure you want to delete "${courseToDelete}: ${savedCoursesDetails.find(course => course.code === courseToDelete)?.title}" from Saved Course?`} 
+          message={`Are you sure you want to delete "${courseToDelete}: ${
+            savedCoursesDetails.find((course) => course.code === courseToDelete)
+              ?.title
+          }" from Saved Course?`}
           onConfirm={handleConfirmDelete}
           onCancel={handleCancelDelete}
         />
