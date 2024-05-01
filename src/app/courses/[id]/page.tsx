@@ -14,6 +14,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from '@/components/ui/navigation-menu';
+import LikeButton from '@/components/LikeButton';
 
 interface Course {
   _id: string;
@@ -383,6 +384,7 @@ export default function CoursePage() {
                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
                           {review.review}
                         </p>
+                        <LikeButton reviewId = {review._id} />
                       </div>
                     );
                   })}
