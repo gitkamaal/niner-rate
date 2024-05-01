@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import Navbar from '@/components/navbar';
 import SearchCourses from './searchCourse'; // Import the SearchCourses component
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import SearchInstructors from './searchInstructor';
 
 type AlertVariant = 'default' | 'destructive';
 
@@ -14,6 +15,7 @@ const Page: React.FC = () => {
   // Initialize all state variables at the top, unconditionally
   const [courseName, setCourseName] = useState('');
   const [studentName, setStudentName] = useState('');
+  const [instructorName, setInstructorName] = useState('');
   const [rating, setRating] = useState<number | null>(null);
   const [review, setReview] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -55,6 +57,7 @@ const Page: React.FC = () => {
         body: JSON.stringify({
           courseId: courseData._id,
           studentName: session.user.firstName,
+          instructorName,
           rating,
           review,
           userId: session.user.id,
@@ -66,6 +69,7 @@ const Page: React.FC = () => {
         // Reset form fields on successful submission
         setCourseName('');
         setStudentName('');
+        setInstructorName('');
         setRating(null);
         setReview('');
         setSearchTerm(''); // Reset the search term (not working currently)
@@ -121,6 +125,11 @@ const Page: React.FC = () => {
     setSearchTerm(selectedCourse); // Update the search term
   };
 
+  const handleInstructorSearch = (selectedInstructor: string) => {
+    setInstructorName(selectedInstructor); // Set the selected course name
+    setSearchTerm(selectedInstructor); // Update the search term
+  };
+
   return (
     <div>
       <Navbar />
@@ -155,6 +164,7 @@ const Page: React.FC = () => {
                 resetTrigger={resetTrigger}
               />
             </label>
+
             <label style={{ display: 'none' }}>
               Selected Course:
               <input
@@ -162,6 +172,17 @@ const Page: React.FC = () => {
                 value={courseName}
                 onChange={(e) => setCourseName(e.target.value)}
                 className="w-full p-2 mb-4 hover:border-[#A49665] focus:border-[#A49665] border rounded-lg outline-none"
+              />
+            </label>
+          </div>
+          <div>
+            <label>
+              Instructor:
+              <SearchInstructors
+                placeholder="Search for an instructor..."
+                searchInstructors={handleInstructorSearch}
+                searchTerm={searchTerm}
+                resetTrigger={resetTrigger}
               />
             </label>
           </div>

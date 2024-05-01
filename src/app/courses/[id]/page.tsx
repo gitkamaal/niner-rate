@@ -30,6 +30,7 @@ interface Review {
   review: string;
   studentName: string;
   createdAt: string;
+  instructorName: string;
 }
 
 export default function CoursePage() {
@@ -352,7 +353,13 @@ export default function CoursePage() {
                                   />
                                 )
                               )}
+                              {review.instructorName && (
+                                <span className=" mx-7 text-sm  text-gray-500">
+                                  Professor: {review.instructorName}
+                                </span>
+                              )}
                             </div>
+
                             <div>
                               <span className="text-sm text-gray-500">
                                 {formattedDate}
@@ -360,9 +367,10 @@ export default function CoursePage() {
                             </div>
                           </div>
                         </div>
-                        <span className="text-sm font-medium">
+
+                        <div className="text-sm font-medium">
                           {review.studentName}
-                        </span>
+                        </div>
                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
                           {review.review}
                         </p>
