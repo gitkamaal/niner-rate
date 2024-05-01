@@ -1,34 +1,32 @@
 import React, { useEffect, useState } from 'react';
 
-interface Course {
+interface Instructor {
   _id: string;
-  code: string;
-  title: string;
+  name: string;
 }
 
-type SearchInputProps = {
+type SearchInstructorProps = {
   className?: string;
   placeholder?: string;
-  searchCourses: (term: string) => void;
+  searchInstructors: (name: string) => void;
   searchTerm: string;
   resetTrigger: number;
 };
 
-const SearchCourses: React.FC<SearchInputProps> = ({
+const SearchInstructors: React.FC<SearchInstructorProps> = ({
   className,
   placeholder,
-  searchCourses,
+  searchInstructors,
   searchTerm,
   resetTrigger,
 }) => {
-  const [internalSearchTerm, setInternalSearchTerm] =
-    useState<string>(searchTerm);
-  const [suggestions, setSuggestions] = useState<Course[]>([]);
-  const [data, setData] = useState<Course[]>([]);
+  const [internalSearchTerm, setInternalSearchTerm] = useState<string>(searchTerm);
+  const [suggestions, setSuggestions] = useState<Instructor[]>([]);
+  const [data, setData] = useState<Instructor[]>([]);
 
   // Fetch initial data
   useEffect(() => {
-    fetch('/api/courses')
+    fetch('/api/instructors')
       .then((response) => response.json())
       .then(setData);
   }, []);
@@ -45,7 +43,7 @@ const SearchCourses: React.FC<SearchInputProps> = ({
     if (value.length > 0) {
       const regex = new RegExp(`^${value}`, 'i');
       const filtered = data.filter(
-        (v) => regex.test(v.code) || regex.test(v.title)
+        (v) => regex.test(v.name)
       );
       setSuggestions(filtered.slice(0, 6));
     } else {
@@ -53,10 +51,10 @@ const SearchCourses: React.FC<SearchInputProps> = ({
     }
   };
 
-  const onSuggestionClick = (code: string) => {
-    setInternalSearchTerm(code);
+  const onSuggestionClick = (name: string) => {
+    setInternalSearchTerm(name);
     setSuggestions([]);
-    searchCourses(code);
+    searchInstructors(name);
   };
 
   return (
@@ -70,13 +68,13 @@ const SearchCourses: React.FC<SearchInputProps> = ({
       />
       {suggestions.length > 0 && (
         <ul className="absolute z-10 w-72 bg-white border border-gray-300 rounded-lg mt-1 shadow-lg">
-          {suggestions.map((item, index) => (
+          {suggestions.map((instructor, index) => (
             <li
               key={index}
               className="p-2 hover:bg-gray-100 cursor-pointer"
-              onClick={() => onSuggestionClick(item.code)}
+              onClick={() => onSuggestionClick(instructor.name)}
             >
-              {item.code}
+              {instructor.name}
             </li>
           ))}
         </ul>
@@ -85,4 +83,4 @@ const SearchCourses: React.FC<SearchInputProps> = ({
   );
 };
 
-export default SearchCourses;
+export default SearchInstructors;

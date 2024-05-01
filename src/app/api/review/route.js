@@ -25,7 +25,7 @@ export async function POST(req) {
     const requestBody = await req.json();
     console.log('Request Body:', requestBody);
 
-    const { courseId, studentName, rating, review } = requestBody;
+    const { courseId, studentName, rating, review, instructorName } = requestBody;
 
     const course = await db
       .collection('courses')
@@ -41,6 +41,7 @@ export async function POST(req) {
         courseId,
         rating,
         studentName,
+        instructorName,
         review,
         host: session.user.id,
         createdAt: new Date(),
